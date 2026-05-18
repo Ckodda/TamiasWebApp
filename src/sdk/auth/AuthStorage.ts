@@ -25,6 +25,7 @@ export class AuthStorage {
   }
 
   static SetCapabilities(capabilities: UserCapabilitiesResponse): void {
+     console.log('Guardando capacidades en storage:', capabilities);
     localStorage.setItem(USER_CAPABILITIES_KEY, JSON.stringify(capabilities));
   }
 

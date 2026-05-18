@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal, WritableSignal } from '@angular/core';
 import { AuthStorage } from '../../auth/AuthStorage';
 import { UserCapabilitiesResponse } from '../../responses/User/UserCapabilitiesResponse';
 
@@ -6,17 +6,24 @@ import { UserCapabilitiesResponse } from '../../responses/User/UserCapabilitiesR
   providedIn: 'root',
 })
 export class GetUserAccessControlAction {
-  private Capabilities: UserCapabilitiesResponse | null = null;
+  private _capabilities: WritableSignal<UserCapabilitiesResponse | null> = signal(null);
 
   constructor() {
-    this.Capabilities = AuthStorage.GetCapabilities();
+    this._capabilities.set(AuthStorage.GetCapabilities());
+  }
+
+  /**
+   * Expone las capacidades como un signal de solo lectura.
+   */
+  public get Capabilities(): WritableSignal<UserCapabilitiesResponse | null> {
+    return this._capabilities;
   }
 
   /**
    * Actualiza las capacidades en memoria y storage.
    */
   UpdateCapabilities(capabilities: UserCapabilitiesResponse): void {
-    this.Capabilities = capabilities;
+    this._capabilities.set(capabilities);
     AuthStorage.SetCapabilities(capabilities);
   }
 
@@ -24,8 +31,9 @@ export class GetUserAccessControlAction {
    * Verifica si el usuario tiene un permiso específico en un módulo.
    */
   HasPermission(module: string, action: string): boolean {
-    if (!this.Capabilities || !this.Capabilities.Permissions) return false;
-    const modulePermissions = this.Capabilities.Permissions[module];
+    const currentCaps = this._capabilities();
+    if (!currentCaps || !currentCaps.Permissions) return false;
+    const modulePermissions = currentCaps.Permissions[module];
     return modulePermissions ? modulePermissions.includes(action) : false;
   }
 
@@ -33,10 +41,11 @@ export class GetUserAccessControlAction {
    * Verifica si el usuario tiene un rol específico.
    */
   HasRole(roleName: string): boolean {
-    return this.Capabilities?.Roles.includes(roleName) || false;
+    const currentCaps = this._capabilities();
+    return currentCaps?.Roles.includes(roleName) || false;
   }
 
   Clear(): void {
-    this.Capabilities = null;
+    this._capabilities.set(null);
   }
 }
