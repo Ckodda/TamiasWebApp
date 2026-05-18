@@ -1,0 +1,24 @@
+<ion-menu menuId="main-menu" contentId="main-content" type="overlay">
+  <ion-header>
+    <ion-toolbar mode="ios">
+      <ion-title>Navegación</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content color="light">
+    <ion-list>
+      <ion-item button routerLink="/home" routerDirection="root" detail="true">
+        <ion-icon slot="start" name="home-outline" color="primary"></ion-icon>
+        <ion-label>Inicio</ion-label>
+      </ion-item>
+      <ion-item button routerLink="/settings" routerDirection="root" detail="true">
+        <ion-icon slot="start" name="settings-outline" color="primary"></ion-icon>
+        <ion-label>Configuración</ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<div class="ion-page" id="main-content">
+  <app-navbar></app-navbar>
+  <ion-router-outlet></ion-router-outlet>
+</div>

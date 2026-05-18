@@ -1,0 +1,48 @@
+<ion-content [fullscreen]="true">
+  <div class="login-wrapper">
+    <ion-card>
+      <ion-card-content class="ion-padding">
+        <h2 class="ion-text-center ion-margin-bottom">Tamias</h2>
+
+        <form [formGroup]="LoginForm">
+          <ion-list>
+            <ion-item>
+              <ion-input
+                formControlName="email"
+                label="Usuario/Email"
+                labelPlacement="floating"
+                type="email"
+                placeholder="usuario@ejemplo.com">
+              </ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-input
+                formControlName="password"
+                label="Contraseña"
+                labelPlacement="floating"
+                type="password"
+                placeholder="Ingrese su contraseña">
+              </ion-input>
+            </ion-item>
+
+            <ion-item lines="none">
+              <ion-checkbox formControlName="rememberMe" labelPlacement="end">
+                Recordar acceso
+              </ion-checkbox>
+            </ion-item>
+          </ion-list>
+
+          <ion-button
+            expand="block"
+            class="ion-margin-top"
+            [disabled]="IsLoading || !LoginForm.valid"
+            (click)="OnLogin()">
+            {{ IsLoading ? 'Cargando...' : 'Iniciar sesión' }}
+          </ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+
