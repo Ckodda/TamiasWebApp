@@ -19,7 +19,7 @@ import {
   ToastController,
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
-import { AuthAction } from '../../sdk';
+import { AuthAction } from 'src/sdk/Actions/Auth/AuthAction';
 
 @Component({
   selector: 'app-login',

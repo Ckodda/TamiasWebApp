@@ -9,8 +9,8 @@ export interface MenuItem {
 
 export const MENU_ROUTES: MenuItem[] = [
   {
-    Path: '/dashboard',
-    Label: 'Escritorio',
+    Path: '/home',
+    Label: 'Inicio',
     Icon: 'home-outline',
     Module: 'Dashboard',
     Action: 'Read',

@@ -3,4 +3,5 @@ export interface UserResponse {
      FullName: string;
      Email: string;
      AvatarColor?: string;
+     IsActive: boolean;
 }

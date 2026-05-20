@@ -1,5 +1,5 @@
-import { UserResponse } from "../responses/Auth";
-import { UserCapabilitiesResponse } from "../responses/User/UserCapabilitiesResponse";
+import { UserResponse } from "src/sdk/Responses/Auth";
+import { UserCapabilitiesResponse } from "src/sdk/Responses/User/UserCapabilitiesResponse";
 
 
 const ACCESS_TOKEN_KEY = 'tamias_access_token';
@@ -25,7 +25,6 @@ export class AuthStorage {
   }
 
   static SetCapabilities(capabilities: UserCapabilitiesResponse): void {
-     console.log('Guardando capacidades en storage:', capabilities);
     localStorage.setItem(USER_CAPABILITIES_KEY, JSON.stringify(capabilities));
   }
 

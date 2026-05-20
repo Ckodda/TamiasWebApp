@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { 
   IonMenu, 
+  IonMenuToggle,
   IonContent, 
   IonList, 
   IonItem, 
@@ -38,6 +39,7 @@ import { CommonModule } from '@angular/common';
   imports: [
     CommonModule,
     IonMenu, 
+    IonMenuToggle,
     IonContent, 
     IonList, 
     IonItem, 

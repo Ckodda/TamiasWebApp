@@ -1,11 +1,11 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AuthStorage } from './AuthStorage';
-import { LoginRequest } from '../requests/auth/LoginRequest';
+import { AuthStorage } from 'src/sdk/Actions/Auth/AuthStorage';
+import { LoginRequest } from 'src/sdk/Requests/Auth/LoginRequest';
 
-import { TAMIAS_AUTH_ENDPOINTS } from '../api.config';
-import { LoginResponse, LogoutResponse, UserResponse } from '../responses/Auth';
+import { TAMIAS_AUTH_ENDPOINTS } from 'src/sdk/api.config';
+import { LoginResponse, LogoutResponse, UserResponse } from 'src/sdk/Responses/Auth';
 
 
 @Injectable({

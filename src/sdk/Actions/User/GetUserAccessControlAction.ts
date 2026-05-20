@@ -1,6 +1,6 @@
 import { Injectable, signal, WritableSignal } from '@angular/core';
-import { AuthStorage } from '../../auth/AuthStorage';
-import { UserCapabilitiesResponse } from '../../responses/User/UserCapabilitiesResponse';
+import { AuthStorage } from 'src/sdk/Actions/Auth/AuthStorage';
+import { UserCapabilitiesResponse } from '../../Responses/User/UserCapabilitiesResponse';
 
 @Injectable({
   providedIn: 'root',

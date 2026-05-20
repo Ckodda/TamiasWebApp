@@ -1,0 +1,139 @@
+<div class="ion-padding">
+  <div class="header-container ion-margin-bottom" style="display: flex; justify-content: space-between; align-items: center;">
+    <ion-text color="dark">
+      <h1 style="font-weight: 800; margin: 0;">Monedas</h1>
+    </ion-text>
+    <ion-button color="success" (click)="openCreateModal()">
+      <ion-icon slot="start" name="add-outline"></ion-icon>
+      Nueva Moneda
+    </ion-button>
+  </div>
+
+  <!-- Sección de Filtros -->
+  <ion-card class="ion-no-margin ion-margin-bottom">
+    <ion-card-header>
+      <ion-card-title style="font-size: 1rem; display: flex; align-items: center;">
+        <ion-icon name="filter-outline" slot="start" class="ion-margin-end"></ion-icon>
+        Filtros de búsqueda
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12" size-md="2">
+            <ion-input
+              mode="md"
+              fill="outline"
+              label="ID"
+              labelPlacement="stacked"
+              type="number"
+              [(ngModel)]="filters.Id"
+              placeholder="Ej: 1"
+              [errorText]="validationErrors()?.Id ? validationErrors().Id[0] : ''"
+              [class.ion-invalid]="validationErrors()?.Id"
+              [class.ion-touched]="validationErrors()?.Id"
+            ></ion-input>
+          </ion-col>
+          <ion-col size="12" size-md="3">
+            <ion-input
+              mode="md"
+              fill="outline"
+              label="Nombre"
+              labelPlacement="stacked"
+              [(ngModel)]="filters.CurrencyName"
+              placeholder="Ej: Dólar"
+              [errorText]="validationErrors()?.CurrencyName ? validationErrors().CurrencyName[0] : ''"
+              [class.ion-invalid]="validationErrors()?.CurrencyName"
+              [class.ion-touched]="validationErrors()?.CurrencyName"
+            ></ion-input>
+          </ion-col>
+          <ion-col size="12" size-md="3">
+            <ion-input
+              mode="md"
+              fill="outline"
+              label="Código"
+              labelPlacement="stacked"
+              [(ngModel)]="filters.CurrencyCode"
+              placeholder="Ej: USD"
+              [errorText]="validationErrors()?.CurrencyCode ? validationErrors().CurrencyCode[0] : ''"
+              [class.ion-invalid]="validationErrors()?.CurrencyCode"
+              [class.ion-touched]="validationErrors()?.CurrencyCode"
+            ></ion-input>
+          </ion-col>
+          <ion-col size="12" size-md="2">
+            <ion-select
+              mode="md"
+              fill="outline"
+              label="Estado"
+              labelPlacement="stacked"
+              [(ngModel)]="filters.IsActive"
+              interface="popover"
+              [errorText]="validationErrors()?.IsActive ? validationErrors().IsActive[0] : ''"
+              [class.ion-invalid]="validationErrors()?.IsActive"
+              [class.ion-touched]="validationErrors()?.IsActive"
+            >
+              <ion-select-option [value]="null">Todos</ion-select-option>
+              <ion-select-option [value]="true">Activo</ion-select-option>
+              <ion-select-option [value]="false">Inactivo</ion-select-option>
+            </ion-select>
+          </ion-col>
+          <ion-col size="12" size-md="2" class="ion-align-self-center">
+              <ion-button expand="block" (click)="LoadData()" [disabled]="isLoading()">
+                <ion-icon slot="start" name="search-outline" *ngIf="!isLoading()"></ion-icon>
+                <ion-spinner slot="start" name="crescent" size="small" *ngIf="isLoading()"></ion-spinner>
+                {{ isLoading() ? 'Buscando...' : 'Buscar' }}
+              </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Listado de Resultados -->
+  <ion-card class="ion-no-margin list-container">
+    <ion-grid class="ion-no-padding">
+      <!-- Cabecera oculta en móviles muy pequeños si se desea, o con scroll -->
+      <ion-row class="header-row ion-hide-sm-down">
+        <ion-col size="1" size-md="1"><b>Id</b></ion-col>
+        <ion-col size="1" size-md="1"><b>Código</b></ion-col>
+        <ion-col size="4" size-md="4"><b>Nombre</b></ion-col>
+        <ion-col size="2" size-md="2"><b>Símbolo</b></ion-col>
+        <ion-col size="2" size-md="2" class="ion-text-center"><b>Estado</b></ion-col>
+        <ion-col size="2" size-md="2" class="ion-text-center"><b>Acciones</b></ion-col>
+      </ion-row>
+
+      <!-- Filas de datos -->
+      <ion-row *ngFor="let item of currencies()" class="data-row ion-align-items-center">
+        <ion-col size="1" size-md="1">{{ item.Id }}</ion-col>
+        <ion-col size="2" size-md="1">
+          <ion-text color="medium" class="ion-hide-md-up"><small>Código: </small></ion-text>
+          {{ item.CurrencyCode }}
+        </ion-col>
+        <ion-col size="9" size-md="4" class="ion-text-wrap">
+          {{ item.CurrencyName }}
+        </ion-col>
+        <ion-col size="3" size-md="2">
+          <ion-text color="medium" class="ion-hide-md-up"><small>Símbolo: </small></ion-text>
+          {{ item.CurrencySymbol }}
+        </ion-col>
+        <ion-col size="5" size-md="2" class="ion-text-center">
+            <ion-badge [color]="item.IsActive ? 'success' : 'medium'">
+              {{ item.IsActive ? 'Activo' : 'Inactivo' }}
+            </ion-badge>
+        </ion-col>
+        <ion-col size="4" size-md="2" class="ion-text-center">
+          <ion-button fill="clear" color="primary" size="small" (click)="openUpdateModal(item)">
+            <ion-icon slot="icon-only" name="pencil-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" color="danger" size="small">
+            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+    
+    <div *ngIf="currencies().length === 0 && !isLoading()" class="ion-text-center ion-padding">
+      <ion-text color="medium">No se encontraron monedas.</ion-text>
+    </div>
+  </ion-card>
+</div>

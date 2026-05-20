@@ -1,23 +1,28 @@
 <ion-menu menuId="main-menu" contentId="main-content" type="overlay">
   <ion-header>
-    <ion-toolbar color="primary">
+    <ion-toolbar>
       <ion-title>Tamias Web</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content>
     <ion-list>
       <!-- Iteramos usando el Signal filteredMenu() -->
-      <ion-item *ngFor="let route of menuService.filteredMenu()" 
-                [routerLink]="[route.Path]" 
-                routerLinkActive="selected">
-        <ion-icon slot="start" [name]="route.Icon"></ion-icon>
-        <ion-label>{{ route.Label }}</ion-label>
-      </ion-item>
+      <ion-menu-toggle auto-hide="false" *ngFor="let route of menuService.filteredMenu()">
+        <ion-item [routerLink]="[route.Path]" 
+                  routerLinkActive="selected">
+          <ion-icon slot="start" [name]="route.Icon"></ion-icon>
+          <ion-label>{{ route.Label }}</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
     </ion-list>
   </ion-content>
 </ion-menu>
 
 <div class="ion-page" id="main-content">
-  <app-navbar></app-navbar>
-  <ion-router-outlet></ion-router-outlet>
+  <ion-header>
+    <app-navbar></app-navbar>
+  </ion-header>
+  <ion-content>
+    <ion-router-outlet></ion-router-outlet>
+  </ion-content>
 </div>

@@ -1,11 +1,10 @@
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, throwError } from "rxjs";
-import { AuthStorage } from "src/sdk/auth/AuthStorage";
-import { UserResponse } from "src/sdk/responses/Auth";
 import { TAMIAS_AUTH_ENDPOINTS } from "src/sdk/api.config";
-import { ApiResponse } from "src/sdk/responses/ApiResponse";
-import { UserCapabilitiesResponse } from "src/sdk/responses/User/UserCapabilitiesResponse";
+import { AuthStorage } from "src/sdk/Actions/Auth/AuthStorage";
+import { ApiResponse } from "src/sdk/Responses/ApiResponse";
+import { UserCapabilitiesResponse } from "src/sdk/Responses/User/UserCapabilitiesResponse";
 
 @Injectable({
   providedIn: 'root',

@@ -3,11 +3,11 @@ import { Router } from '@angular/router';
 import { Observable, throwError, switchMap, map, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { AuthService } from './AuthService';
-import { LoginRequest } from '../requests/auth/LoginRequest';
-import { GetAvatarColor } from '../../shared/ColorGenerator';
-import { LoginResponse, LogoutResponse } from '../responses/Auth';
-import { GetUserCapabilitiesAction } from '../Actions/User/GetUserCapabilities';
-import { GetUserAccessControlAction } from '../Actions/User/GetUserAccessControlAction';
+import { LoginRequest } from 'src/sdk/Requests/Auth/LoginRequest';
+import { GetAvatarColor } from 'src/shared/ColorGenerator';
+import { LoginResponse, LogoutResponse } from 'src/sdk/Responses/Auth';
+import { GetUserCapabilitiesAction } from 'src/sdk/Actions/User/GetUserCapabilities';
+import { GetUserAccessControlAction } from 'src/sdk/Actions/User/GetUserAccessControlAction';
 
 export interface ValidationError {
   Field: string;

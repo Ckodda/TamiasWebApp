@@ -8,4 +8,5 @@ export const TAMIAS_AUTH_ENDPOINTS = {
   login: `${TAMIAS_AUTH_ROUTE}/login`,
   logout: `${TAMIAS_AUTH_ROUTE}/logout`,
   users: `${TAMIAS_API_BASE_URL}/users`,
+  currencies: `${TAMIAS_API_BASE_URL}/currencies`,
 };

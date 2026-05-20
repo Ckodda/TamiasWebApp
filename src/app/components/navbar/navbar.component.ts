@@ -1,24 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-  IonHeader,
   IonToolbar,
   IonTitle,
   IonButtons,
   IonButton,
-  IonAvatar,
   IonPopover,
   IonContent,
   IonList,
   IonItem,
   IonLabel,
   IonIcon,
-  IonMenuButton,
   IonChip,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { logOutOutline, menuOutline } from 'ionicons/icons';
-import { AuthAction } from '../../../sdk';
+import { AuthAction } from 'src/sdk/Actions/Auth/AuthAction';
 import { CommonModule } from '@angular/common';
 import { LayoutService } from 'src/shared/services/LayoutService';
 
@@ -29,19 +26,16 @@ import { LayoutService } from 'src/shared/services/LayoutService';
   standalone: true,
   imports: [
     CommonModule,
-    IonHeader,
     IonToolbar,
     IonTitle,
     IonButtons,
     IonButton,
-    IonAvatar,
     IonPopover,
     IonContent,
     IonList,
     IonItem,
     IonLabel,
     IonIcon,
-    IonMenuButton,
     IonChip,
   ],
 })

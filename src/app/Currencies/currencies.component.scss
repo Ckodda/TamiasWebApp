@@ -1,0 +1,32 @@
+.list-container {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.header-row {
+  background-color: var(--ion-color-light);
+  padding: 12px 8px;
+  border-bottom: 2px solid var(--ion-color-light-shade);
+  
+  ion-col {
+    font-weight: 700;
+    color: var(--ion-color-step-700);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.data-row {
+  padding: 8px;
+  border-bottom: 1px solid var(--ion-color-light-shade);
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--ion-color-step-50);
+  }
+
+  ion-col {
+    font-size: 0.95rem;
+  }
+}

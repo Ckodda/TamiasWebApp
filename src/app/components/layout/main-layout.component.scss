@@ -1,0 +1,15 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+ion-item.selected {
+  // Estilo para el ítem activo
+  --background: rgba(var(--ion-color-success-rgb), 0.1);
+  --color: var(--ion-color-success);
+  font-weight: bold;
+
+  ion-icon {
+    color: var(--ion-color-success);
+  }
+}

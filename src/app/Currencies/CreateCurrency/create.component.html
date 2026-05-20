@@ -1,0 +1,71 @@
+<ion-header mode="ios">
+  <ion-toolbar>
+    <ion-title>Nueva Moneda</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">Cancelar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <ion-input
+      mode="md"
+      fill="outline"
+      label="Nombre de la Moneda"
+      labelPlacement="stacked"
+      formControlName="CurrencyName"
+      placeholder="Ej: Dólar Americano"
+      [errorText]="getErrorMessage('CurrencyName')"
+      class="ion-margin-bottom"
+    ></ion-input>
+
+    <ion-input
+      mode="md"
+      fill="outline"
+      label="Código (ISO)"
+      labelPlacement="stacked"
+      formControlName="CurrencyCode"
+      placeholder="Ej: USD"
+      maxlength="3"
+      [errorText]="getErrorMessage('CurrencyCode')"
+      class="ion-margin-bottom"
+    ></ion-input>
+
+    <ion-input
+      mode="md"
+      fill="outline"
+      label="Símbolo"
+      labelPlacement="stacked"
+      formControlName="CurrencySymbol"
+      placeholder="Ej: $"
+      [errorText]="getErrorMessage('CurrencySymbol')"
+      class="ion-margin-bottom"
+    ></ion-input>
+
+    <ion-input
+      mode="md"
+      fill="outline"
+      type="text"
+      label="Tasa de Cambio"
+      labelPlacement="stacked"
+      formControlName="ExchangeRate"
+      placeholder="0.00"
+      [errorText]="getErrorMessage('ExchangeRate')"
+      class="ion-margin-bottom"
+      pattern="^\d+(\.\d+)?$"
+      inputmode="decimal"
+    ></ion-input>
+
+    <ion-text color="danger" *ngIf="validationErrors()?.general">
+      <small>{{ validationErrors().general[0] }}</small>
+    </ion-text>
+
+    <div class="ion-padding-top">
+      <ion-button expand="block" type="submit" [disabled]="isLoading()">
+        <ion-spinner slot="start" name="crescent" size="small" *ngIf="isLoading()"></ion-spinner>
+        {{ isLoading() ? 'Guardando...' : 'Guardar Moneda' }}
+      </ion-button>
+    </div>
+  </form>
+</ion-content>
