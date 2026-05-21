@@ -1,0 +1,34 @@
+<ion-header mode="ios">
+  <ion-toolbar>
+    <ion-title>Nuevo Método de Pago</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">Cancelar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <ion-input
+      mode="md"
+      fill="outline"
+      label="Nombre del Método"
+      labelPlacement="stacked"
+      formControlName="MethodName"
+      placeholder="Ej: Efectivo, Tarjeta..."
+      [errorText]="getErrorMessage('MethodName')"
+      class="ion-margin-bottom"
+    ></ion-input>
+
+    <ion-text color="danger" *ngIf="validationErrors()?.general">
+      <small>{{ validationErrors().general[0] }}</small>
+    </ion-text>
+
+    <div class="ion-padding-top">
+      <ion-button expand="block" type="submit" [disabled]="isLoading()">
+        <ion-spinner slot="start" name="crescent" size="small" *ngIf="isLoading()"></ion-spinner>
+        {{ isLoading() ? 'Guardando...' : 'Crear Método' }}
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

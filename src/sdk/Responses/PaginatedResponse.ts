@@ -4,4 +4,5 @@ export interface PaginatedResponse<T>
      TotalCount: number;
      PageSize: number;
      PageNumber: number;
+     TotalPages: number;
 }

@@ -1,0 +1,62 @@
+<ion-header mode="ios">
+  <ion-toolbar>
+    <ion-title>Nuevo Usuario</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">Cancelar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <ion-input
+      mode="md"
+      fill="outline"
+      label="Nombre Completo"
+      labelPlacement="stacked"
+      formControlName="FullName"
+      placeholder="Ej: Juan Pérez"
+      [errorText]="getErrorMessage('FullName')"
+      class="ion-margin-bottom"
+    ></ion-input>
+
+    <ion-input
+      mode="md"
+      fill="outline"
+      label="Correo Electrónico"
+      labelPlacement="stacked"
+      formControlName="Email"
+      type="email"
+      placeholder="Ej: juan.perez@example.com"
+      [errorText]="getErrorMessage('Email')"
+      class="ion-margin-bottom"
+    ></ion-input>
+
+    <ion-input
+      mode="md"
+      fill="outline"
+      label="Contraseña"
+      labelPlacement="stacked"
+      formControlName="Password"
+      [type]="showPassword() ? 'text' : 'password'"
+      placeholder="Mínimo 8 caracteres"
+      [errorText]="getErrorMessage('Password')"
+      class="ion-margin-bottom"
+    >
+      <ion-button fill="clear" slot="end" (click)="togglePasswordVisibility(); $event.stopPropagation()" type="button">
+        <ion-icon slot="icon-only" [name]="showPassword() ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+      </ion-button>
+    </ion-input>
+
+    <ion-text color="danger" *ngIf="validationErrors()?.general">
+      <small>{{ validationErrors().general[0] }}</small>
+    </ion-text>
+
+    <div class="ion-padding-top">
+      <ion-button expand="block" type="submit" [disabled]="isLoading()">
+        <ion-spinner slot="start" name="crescent" size="small" *ngIf="isLoading()"></ion-spinner>
+        {{ isLoading() ? 'Guardando...' : 'Crear Usuario' }}
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

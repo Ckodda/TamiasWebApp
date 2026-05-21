@@ -3,7 +3,7 @@
     <ion-text color="dark">
       <h1 style="font-weight: 800; margin: 0;">Usuarios</h1>
     </ion-text>
-    <ion-button color="success">
+    <ion-button color="success" (click)="openCreateModal()">
       <ion-icon slot="start" name="add-outline"></ion-icon>
       Nuevo Usuario
     </ion-button>
@@ -89,38 +89,18 @@
     </ion-card-content>
   </ion-card>
 
-  <!-- Listado de Resultados -->
-  <ion-card class="ion-no-margin list-container">
-    <ion-grid class="ion-no-padding">
-      <ion-row class="header-row ion-hide-sm-down">
-        <ion-col size="1" size-md="1"><b>Id</b></ion-col>
-        <ion-col size="4" size-md="4"><b>Nombre Completo</b></ion-col>
-        <ion-col size="4" size-md="4"><b>Correo Electrónico</b></ion-col>
-        <ion-col size="1" size-md="1" class="ion-text-center"><b>Estado</b></ion-col>
-        <ion-col size="2" size-md="2" class="ion-text-center"><b>Acciones</b></ion-col>
-      </ion-row>
-
-      <ion-row *ngFor="let item of users()" class="data-row ion-align-items-center">
-        <ion-col size="1" size-md="1">{{ item.Id }}</ion-col>
-        <ion-col size="4" size-md="4">{{ item.FullName }}</ion-col>
-        <ion-col size="4" size-md="4">{{ item.Email }}</ion-col>
-        <ion-col size="1" size-md="1" class="ion-text-center">
-          <ion-badge [color]="item.IsActive ? 'success' : 'medium'">
-            {{ item.IsActive ? 'Activo' : 'Inactivo' }}
-          </ion-badge>
-        </ion-col>
-        <ion-col size="2" size-md="2" class="ion-text-center">
-          <ion-button fill="clear" color="primary" size="small">
-            <ion-icon slot="icon-only" name="pencil-outline"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" color="danger" size="small">
-            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-          </ion-button>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-    <div *ngIf="users().length === 0 && !isLoading()" class="ion-text-center ion-padding">
-      <ion-text color="medium">No se encontraron usuarios.</ion-text>
-    </div>
-  </ion-card>
+  <!-- Reutilización del componente de tabla genérico -->
+  <app-table
+    [items]="users()"
+    [columns]="userColumns"
+    [isLoading]="isLoading()"
+    [totalCount]="totalCount()"
+    [pageNumber]="filters.PageNumber!"
+    [pageSize]="filters.PageSize!"
+    totalLabel="usuarios"
+    (edit)="onTableEdit($event)"
+    (delete)="onTableDelete($event)"
+    (pageChange)="onTablePageChange($event)"
+    (pageSizeChange)="onTablePageSizeChange($event)"
+  ></app-table>
 </div>

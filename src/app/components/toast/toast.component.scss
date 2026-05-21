@@ -1,0 +1,28 @@
+
+.tamias-custom-toast {
+  --border-radius: 8px;
+  
+  /* Estilo para el icono de éxito */
+  &.tamias-toast-success {
+    border-left: 5px solid var(--ion-color-success);
+    
+    &::part(button) {
+      /* Seleccionamos el color del botón que actúa como icono al inicio */
+      color: var(--ion-color-success);
+    }
+  }
+
+  /* Estilo para el icono de error */
+  &.tamias-toast-error {
+    border-left: 5px solid var(--ion-color-danger);
+
+    &::part(button) {
+      color: var(--ion-color-danger);
+    }
+  }
+  
+  /* Aseguramos que el botón de cerrar (X) siga siendo gris sutil */
+  &::part(button-cancel) {
+    color: var(--ion-color-medium);
+  }
+}

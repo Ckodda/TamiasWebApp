@@ -1,11 +1,11 @@
 <div class="ion-padding">
   <div class="header-container ion-margin-bottom" style="display: flex; justify-content: space-between; align-items: center;">
     <ion-text color="dark">
-      <h1 style="font-weight: 800; margin: 0;">Monedas</h1>
+      <h1 style="font-weight: 800; margin: 0;">Métodos de Pago</h1>
     </ion-text>
     <ion-button color="success" (click)="openCreateModal()">
       <ion-icon slot="start" name="add-outline"></ion-icon>
-      Nueva Moneda
+      Nuevo Método
     </ion-button>
   </div>
 
@@ -34,33 +34,20 @@
               [class.ion-touched]="validationErrors()?.Id"
             ></ion-input>
           </ion-col>
-          <ion-col size="12" size-md="3">
+          <ion-col size="12" size-md="5">
             <ion-input
               mode="md"
               fill="outline"
-              label="Nombre"
+              label="Nombre del Método"
               labelPlacement="stacked"
-              [(ngModel)]="filters.CurrencyName"
-              placeholder="Ej: Dólar"
-              [errorText]="validationErrors()?.CurrencyName ? validationErrors().CurrencyName[0] : ''"
-              [class.ion-invalid]="validationErrors()?.CurrencyName"
-              [class.ion-touched]="validationErrors()?.CurrencyName"
+              [(ngModel)]="filters.MethodName"
+              placeholder="Ej: Efectivo, Tarjeta..."
+              [errorText]="validationErrors()?.MethodName ? validationErrors().MethodName[0] : ''"
+              [class.ion-invalid]="validationErrors()?.MethodName"
+              [class.ion-touched]="validationErrors()?.MethodName"
             ></ion-input>
           </ion-col>
           <ion-col size="12" size-md="3">
-            <ion-input
-              mode="md"
-              fill="outline"
-              label="Código"
-              labelPlacement="stacked"
-              [(ngModel)]="filters.CurrencyCode"
-              placeholder="Ej: USD"
-              [errorText]="validationErrors()?.CurrencyCode ? validationErrors().CurrencyCode[0] : ''"
-              [class.ion-invalid]="validationErrors()?.CurrencyCode"
-              [class.ion-touched]="validationErrors()?.CurrencyCode"
-            ></ion-input>
-          </ion-col>
-          <ion-col size="12" size-md="2">
             <ion-select
               mode="md"
               fill="outline"
@@ -91,13 +78,13 @@
 
   <!-- Reutilización del componente de tabla genérico -->
   <app-table
-    [items]="currencies()"
-    [columns]="currencyColumns"
+    [items]="paymentMethods()"
+    [columns]="paymentMethodColumns"
     [isLoading]="isLoading()"
     [totalCount]="totalCount()"
     [pageNumber]="filters.PageNumber!"
     [pageSize]="filters.PageSize!"
-    totalLabel="monedas"
+    totalLabel="métodos de pago"
     (edit)="onTableEdit($event)"
     (delete)="onTableDelete($event)"
     (pageChange)="onTablePageChange($event)"

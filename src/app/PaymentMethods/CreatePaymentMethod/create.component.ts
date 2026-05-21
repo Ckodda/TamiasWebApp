@@ -8,20 +8,17 @@ import {
   IonButtons,
   IonButton,
   IonContent,
-  IonIcon,
   IonInput,
   IonText,
   ModalController,
   IonSpinner
 } from '@ionic/angular/standalone';
 import { ToastService } from 'src/app/components/toast/toast.service';
-import { addIcons } from 'ionicons';
-import { eyeOutline, eyeOffOutline } from 'ionicons/icons';
-import { CreateUserAction } from 'src/sdk/Actions/User/CreateUserAction';
-import { CreateUserRequest } from 'src/sdk/Requests/User/CreateUserRequest';
+import { CreatePaymentMethodAction } from 'src/sdk/Actions/PaymentMethod/CreatePaymentMethodAction';
+import { CreatePaymentMethodRequest } from 'src/sdk/Requests/PaymentMethod/CreatePaymentMethodRequest';
 
 @Component({
-  selector: 'app-create-user',
+  selector: 'app-create-payment-method',
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.scss'],
   standalone: true,
@@ -34,7 +31,6 @@ import { CreateUserRequest } from 'src/sdk/Requests/User/CreateUserRequest';
     IonButtons,
     IonButton,
     IonContent,
-    IonIcon,
     IonInput,
     IonText,
     IonSpinner
@@ -43,23 +39,18 @@ import { CreateUserRequest } from 'src/sdk/Requests/User/CreateUserRequest';
 export class CreateComponent implements OnInit {
   public form!: FormGroup;
   public isLoading = signal<boolean>(false);
-  public showPassword = signal<boolean>(false);
   public validationErrors = signal<any>(null);
 
   constructor(
     private modalController: ModalController,
     private fb: FormBuilder,
-    private createUserAction: CreateUserAction,
+    private createAction: CreatePaymentMethodAction,
     private toastService: ToastService
-  ) {
-    addIcons({ eyeOutline, eyeOffOutline });
-  }
+  ) {}
 
   ngOnInit() {
     this.form = this.fb.group({
-      FullName: ['', Validators.required],
-      Email: ['', [Validators.required, Validators.email]],
-      Password: ['', [Validators.required, Validators.minLength(8)]],
+      MethodName: ['', Validators.required],
     });
   }
 
@@ -68,8 +59,6 @@ export class CreateComponent implements OnInit {
     if (!control) return '';
 
     if (control.hasError('required')) return 'Este campo es obligatorio.';
-    if (control.hasError('email')) return 'Ingrese un correo electrónico válido.';
-    if (control.hasError('minlength')) return `Mínimo ${control.errors?.['minlength'].requiredLength} caracteres.`;
 
     const serverErrors = this.validationErrors()?.[controlName];
     return serverErrors ? serverErrors[0] : '';
@@ -79,22 +68,17 @@ export class CreateComponent implements OnInit {
     return this.modalController.dismiss(null, 'cancel');
   }
 
-  togglePasswordVisibility() {
-    this.showPassword.update(v => !v);
-  }
-
   submit() {
     this.validationErrors.set(null);
-    if (this.form.invalid) {
-      return this.form.markAllAsTouched();
-    }
+    if (this.form.invalid) return this.form.markAllAsTouched();
 
     this.isLoading.set(true);
+    const request: CreatePaymentMethodRequest = this.form.value;
 
-    this.createUserAction.Execute(this.form.value as CreateUserRequest).subscribe({
+    this.createAction.Execute(request).subscribe({
       next: (res) => {
         this.isLoading.set(false);
-        if (res.Code === 201) {
+        if (res.Code === 201 || res.Code === 200) {
           this.modalController.dismiss(res.Content, 'created');
         }
       },
@@ -105,14 +89,10 @@ export class CreateComponent implements OnInit {
           this.validationErrors.set(apiError.Content);
           Object.keys(apiError.Content).forEach(key => {
             const control = this.form.get(key);
-            if (control) {
-              control.setErrors({ serverError: true });
-              control.markAsTouched();
-            }
+            if (control) { control.setErrors({ serverError: true }); control.markAsTouched(); }
           });
         } else {
           const errorMsg = apiError?.Message || 'Error de conexión o servidor.';
-          this.validationErrors.set({ general: [errorMsg] });
           this.toastService.showError(errorMsg);
         }
       }

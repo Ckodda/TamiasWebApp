@@ -1,11 +1,10 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import {
   IonGrid,
   IonRow,
   IonCol,
-  IonItem,
-  IonLabel,
   IonInput,
   IonSelect,
   IonSelectOption,
@@ -14,35 +13,33 @@ import {
   IonBadge,
   IonText,
   IonCard,
-  ModalController,
   IonCardHeader,
   IonCardTitle,
   IonCardContent,
-  IonSpinner
+  IonSpinner,
+  ModalController,
 } from '@ionic/angular/standalone';
 import { ToastService } from '../components/toast/toast.service';
 import { addIcons } from 'ionicons';
 import { searchOutline, refreshOutline, filterOutline, addOutline } from 'ionicons/icons';
-import { GetCurrenciesAction } from 'src/sdk/Actions/Currency/GetCurrenciesAction';
-import { GetCurrenciesRequest } from 'src/sdk/Requests/Currency/GetCurrenciesRequest';
-import { CurrencyResponse } from 'src/sdk/Responses/Currency/CurrencyResponse';
-import { CreateComponent } from 'src/app/Currencies/CreateCurrency/create.component';
-import { UpdateComponent } from 'src/app/Currencies/UpdateCurrency/update.component';
+import { GetPaymentMethodsAction } from 'src/sdk/Actions/PaymentMethod/GetPaymentMethodsAction';
+import { GetPaymentMethodsRequest } from 'src/sdk/Requests/PaymentMethod/GetPaymentMethodsRequest';
+import { PaymentMethodResponse } from 'src/sdk/Responses/PaymentMethod/PaymentMethodResponse';
 import { TableComponent, TableColumn } from '../components/table/table.component';
-import { FormsModule } from '@angular/forms';
+import { UpdateComponent } from './UpdatePaymentMethod/update.component';
+import { CreateComponent } from './CreatePaymentMethod/create.component';
 
 @Component({
-  selector: 'app-currencies',
+  selector: 'app-payment-methods',
+  templateUrl: './paymentmethods.component.html',
+  styleUrls: ['./paymentmethods.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
-    // FormsModule se mantiene para los filtros
-    FormsModule, 
+    FormsModule,
     IonGrid,
     IonRow,
     IonCol,
-    IonItem,
-    IonLabel,
     IonInput,
     IonSelect,
     IonSelectOption,
@@ -55,29 +52,28 @@ import { FormsModule } from '@angular/forms';
     IonCardTitle,
     IonCardContent,
     IonSpinner,
-    TableComponent
+    TableComponent,
+    UpdateComponent,
+    CreateComponent
   ],
-  templateUrl: './currencies.component.html',
-  styleUrl: './currencies.component.scss',
 })
-export class CurrenciesComponent implements OnInit {
-  public currencies = signal<CurrencyResponse[]>([]);
+export class PaymentMethodsComponent implements OnInit {
+  public paymentMethods = signal<PaymentMethodResponse[]>([]);
+  public paymentMethodColumns: TableColumn[] = [];
   public totalCount = signal<number>(0);
   public isLoading = signal<boolean>(false);
   public validationErrors = signal<any>(null);
-  public currencyColumns: TableColumn[] = [];
-  
-  public filters: GetCurrenciesRequest = {
+
+  public filters: GetPaymentMethodsRequest = {
     Id: undefined,
-    CurrencyName: '',
-    CurrencyCode: '',
-    IsActive: null, // Ahora el tipo es más estricto, no necesitamos 'as any'
+    MethodName: '',
+    IsActive: null as any,
     PageNumber: 1,
-    PageSize: 10
+    PageSize: 10,
   };
 
   constructor(
-    private getCurrenciesAction: GetCurrenciesAction,
+    private getPaymentMethodsAction: GetPaymentMethodsAction,
     private modalController: ModalController,
     private toastService: ToastService
   ) {
@@ -85,13 +81,11 @@ export class CurrenciesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.currencyColumns = [
+    this.paymentMethodColumns = [
       { key: 'Id', label: 'Id', size: '12', sizeMd: '1' },
-      { key: 'CurrencyCode', label: 'Código', size: '12', sizeMd: '1' },
-      { key: 'CurrencyName', label: 'Nombre', size: '12', sizeMd: '4' },
-      { key: 'CurrencySymbol', label: 'Símbolo', size: '12', sizeMd: '2' },
+      { key: 'MethodName', label: 'Nombre del Método', size: '12', sizeMd: '7' },
       { key: 'IsActive', label: 'Estado', size: '6', sizeMd: '2', type: 'badge', cssClass: 'ion-text-center' },
-      { key: 'actions', label: 'Acciones', size: '6', sizeMd: '2', type: 'actions', cssClass: 'ion-text-center' }
+      { key: 'actions', label: 'Acciones', size: '6', sizeMd: '2', type: 'actions', cssClass: 'ion-text-center' },
     ];
     this.LoadData();
   }
@@ -100,27 +94,32 @@ export class CurrenciesComponent implements OnInit {
     this.isLoading.set(true);
     this.validationErrors.set(null);
 
-    this.getCurrenciesAction.Execute(this.filters).subscribe({
+    this.getPaymentMethodsAction.Execute(this.filters).subscribe({
       next: (response) => {
         if (response.Code === 200 && response.Content) {
-          this.currencies.set(response.Content.Items);
+          this.paymentMethods.set(response.Content.Items);
           this.totalCount.set(response.Content.TotalCount);
         }
         this.isLoading.set(false);
       },
       error: (err) => {
-        // Accedemos al cuerpo de la respuesta de error enviada por el servidor
         const apiError = err.error;
         if (apiError && apiError.Code === 422 && apiError.Content) {
           this.validationErrors.set(apiError.Content);
         }
         this.isLoading.set(false);
-      }
+      },
     });
   }
 
   ResetFilters() {
-    this.filters = { Id: undefined, CurrencyName: '', CurrencyCode: '', IsActive: null, PageNumber: 1, PageSize: 10 };
+    this.filters = {
+      Id: undefined,
+      MethodName: '',
+      IsActive: null as any,
+      PageNumber: 1,
+      PageSize: 10,
+    };
     this.LoadData();
   }
 
@@ -135,12 +134,12 @@ export class CurrenciesComponent implements OnInit {
     this.LoadData();
   }
 
-  onTableEdit(item: CurrencyResponse) {
+  onTableEdit(item: PaymentMethodResponse) {
     this.openUpdateModal(item);
   }
 
-  onTableDelete(item: CurrencyResponse) {
-    // Implementar lógica de eliminación
+  onTableDelete(item: PaymentMethodResponse) {
+    // Implementar lógica de eliminación futura
   }
 
   async openCreateModal() {
@@ -157,10 +156,10 @@ export class CurrenciesComponent implements OnInit {
     }
   }
 
-  async openUpdateModal(currency: CurrencyResponse) {
+  async openUpdateModal(paymentMethod: PaymentMethodResponse) {
     const modal = await this.modalController.create({
       component: UpdateComponent,
-      componentProps: { currency },
+      componentProps: { paymentMethod },
       breakpoints: [0, 0.5, 0.8],
       initialBreakpoint: 0.8
     });

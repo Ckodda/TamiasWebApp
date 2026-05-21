@@ -14,12 +14,20 @@ export const routes: Routes = [
           loadComponent: () => import('./Home/home.page').then((m) => m.HomePage),
      },
      {
+          path: 'cost-centers',
+          loadChildren: () => import('./CostCenters/costcenters.routes').then(m => m.costcentersRoutes)
+     },
+     {
           path: 'currencies',
           loadChildren: () => import('./Currencies/currencies.routes').then(m => m.currenciesRoutes)
      },
      {
           path: 'users',
           loadChildren: () => import('./Users/users.routes').then(m => m.usersRoutes)
+     },
+     {
+          path: 'payment-methods',
+          loadChildren: () => import('./PaymentMethods/paymentmethods.routes').then(m => m.paymentMethodsRoutes)
      }
 
       // Agregar más rutas aquí que requieran Navbar y Sidebar

@@ -8,13 +8,12 @@ import {
   IonButtons,
   IonButton,
   IonContent,
-  IonItem,
-  IonLabel,
   IonInput,
   IonText,
   ModalController,
   IonSpinner
 } from '@ionic/angular/standalone';
+import { ToastService } from 'src/app/components/toast/toast.service';
 import { CreateCurrencyAction } from 'src/sdk/Actions/Currency/CreateCurrencyAction';
 import { CreateCurrencyRequest } from 'src/sdk/Requests/Currency/CreateCurrencyRequest';
 
@@ -32,8 +31,6 @@ import { CreateCurrencyRequest } from 'src/sdk/Requests/Currency/CreateCurrencyR
     IonButtons,
     IonButton,
     IonContent,
-    IonItem,
-    IonLabel,
     IonInput,
     IonText,
     IonSpinner
@@ -67,7 +64,8 @@ export class CreateComponent implements OnInit {
   constructor(
     private modalController: ModalController,
     private fb: FormBuilder,
-    private createAction: CreateCurrencyAction
+    private createAction: CreateCurrencyAction,
+    private toastService: ToastService
   ) {}
 
   ngOnInit() {
@@ -95,7 +93,7 @@ export class CreateComponent implements OnInit {
     this.createAction.Execute(this.form.value as CreateCurrencyRequest).subscribe({
       next: (res) => {
         this.isLoading.set(false);
-        if (res.Code === 200) this.modalController.dismiss(res.Content, 'created');
+        if (res.Code === 201) this.modalController.dismiss(res.Content, 'created');
       },
       error: (err) => {
         this.isLoading.set(false);
@@ -111,7 +109,9 @@ export class CreateComponent implements OnInit {
             }
           });
         } else {
-          this.validationErrors.set({ general: [apiError?.Message || 'Error de conexión o servidor.'] });
+            const errorMsg = apiError?.Message || 'Error de conexión o servidor.';
+            this.validationErrors.set({ general: [errorMsg] });
+            this.toastService.showError(errorMsg);
         }
       }
     });

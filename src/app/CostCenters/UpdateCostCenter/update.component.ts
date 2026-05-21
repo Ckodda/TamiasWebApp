@@ -8,7 +8,6 @@ import {
   IonButtons,
   IonButton,
   IonContent,
-  IonIcon,
   IonInput,
   IonSelect,
   IonSelectOption,
@@ -17,14 +16,12 @@ import {
   IonSpinner
 } from '@ionic/angular/standalone';
 import { ToastService } from 'src/app/components/toast/toast.service';
-import { addIcons } from 'ionicons';
-import { eyeOutline, eyeOffOutline } from 'ionicons/icons';
-import { UpdateUserAction } from 'src/sdk/Actions/User/UpdateUserAction';
-import { UpdateUserRequest } from 'src/sdk/Requests/User/UpdateUserRequest';
-import { UserResponse } from 'src/sdk/Responses/Auth';
+import { UpdateCostCenterAction } from 'src/sdk/Actions/CostCenter/UpdateCostCenterAction';
+import { UpdateCostCenterRequest } from 'src/sdk/Requests/CostCenter/UpdateCostCenter';
+import { CostCenterResponse } from 'src/sdk/Responses/CostCenter/CostCenterResponse';
 
 @Component({
-  selector: 'app-update-user',
+  selector: 'app-update-cost-center',
   templateUrl: './update.component.html',
   styleUrls: ['./update.component.scss'],
   standalone: true,
@@ -37,7 +34,6 @@ import { UserResponse } from 'src/sdk/Responses/Auth';
     IonButtons,
     IonButton,
     IonContent,
-    IonIcon,
     IonInput,
     IonSelect,
     IonSelectOption,
@@ -46,29 +42,25 @@ import { UserResponse } from 'src/sdk/Responses/Auth';
   ],
 })
 export class UpdateComponent implements OnInit {
-  @Input() user!: UserResponse;
-  
+  @Input() costCenter!: CostCenterResponse;
+
   public form!: FormGroup;
   public isLoading = signal<boolean>(false);
-  public showPassword = signal<boolean>(false);
   public validationErrors = signal<any>(null);
 
   constructor(
     private modalController: ModalController,
     private fb: FormBuilder,
-    private updateUserAction: UpdateUserAction,
+    private updateCostCenterAction: UpdateCostCenterAction,
     private toastService: ToastService
-  ) {
-    addIcons({ eyeOutline, eyeOffOutline });
-  }
+  ) {}
 
   ngOnInit() {
     this.form = this.fb.group({
-      Id: [this.user.Id, Validators.required],
-      FullName: [this.user.FullName],
-      Email: [this.user.Email, [Validators.email]],
-      Password: ['', [Validators.minLength(8)]],
-      IsActive: [this.user.IsActive],
+      Id: [this.costCenter.Id, Validators.required],
+      CodeCostCenter: [this.costCenter.CodeCostCenter],
+      CenterName: [this.costCenter.CenterName],
+      IsActive: [this.costCenter.IsActive],
     });
   }
 
@@ -76,8 +68,7 @@ export class UpdateComponent implements OnInit {
     const control = this.form.get(controlName);
     if (!control) return '';
 
-    if (control.hasError('email')) return 'Ingrese un correo electrónico válido.';
-    if (control.hasError('minlength')) return `Mínimo ${control.errors?.['minlength'].requiredLength} caracteres.`;
+    if (control.hasError('required')) return 'Este campo es obligatorio.';
 
     const serverErrors = this.validationErrors()?.[controlName];
     return serverErrors ? serverErrors[0] : '';
@@ -85,10 +76,6 @@ export class UpdateComponent implements OnInit {
 
   cancel() {
     return this.modalController.dismiss(null, 'cancel');
-  }
-
-  togglePasswordVisibility() {
-    this.showPassword.update(v => !v);
   }
 
   submit() {
@@ -99,11 +86,9 @@ export class UpdateComponent implements OnInit {
 
     this.isLoading.set(true);
 
-    // Preparamos el request eliminando campos vacíos para cumplir con "solo se actualizan los que no son null"
-    const request: UpdateUserRequest = { ...this.form.value };
-    if (!request.Password || request.Password.trim() === '') delete request.Password;
+    const request: UpdateCostCenterRequest = { ...this.form.value };
 
-    this.updateUserAction.Execute(request).subscribe({
+    this.updateCostCenterAction.Execute(request).subscribe({
       next: (res) => {
         this.isLoading.set(false);
         if (res.Code === 200) {

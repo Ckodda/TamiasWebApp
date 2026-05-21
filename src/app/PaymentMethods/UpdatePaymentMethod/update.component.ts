@@ -8,7 +8,6 @@ import {
   IonButtons,
   IonButton,
   IonContent,
-  IonIcon,
   IonInput,
   IonSelect,
   IonSelectOption,
@@ -17,14 +16,12 @@ import {
   IonSpinner
 } from '@ionic/angular/standalone';
 import { ToastService } from 'src/app/components/toast/toast.service';
-import { addIcons } from 'ionicons';
-import { eyeOutline, eyeOffOutline } from 'ionicons/icons';
-import { UpdateUserAction } from 'src/sdk/Actions/User/UpdateUserAction';
-import { UpdateUserRequest } from 'src/sdk/Requests/User/UpdateUserRequest';
-import { UserResponse } from 'src/sdk/Responses/Auth';
+import { UpdatePaymentMethodAction } from 'src/sdk/Actions/PaymentMethod/UpdatePaymentMethodAction';
+import { UpdatePaymentMethodRequest } from 'src/sdk/Requests/PaymentMethod/UpdatePaymentMethodRequest';
+import { PaymentMethodResponse } from 'src/sdk/Responses/PaymentMethod/PaymentMethodResponse';
 
 @Component({
-  selector: 'app-update-user',
+  selector: 'app-update-payment-method',
   templateUrl: './update.component.html',
   styleUrls: ['./update.component.scss'],
   standalone: true,
@@ -37,7 +34,6 @@ import { UserResponse } from 'src/sdk/Responses/Auth';
     IonButtons,
     IonButton,
     IonContent,
-    IonIcon,
     IonInput,
     IonSelect,
     IonSelectOption,
@@ -46,38 +42,30 @@ import { UserResponse } from 'src/sdk/Responses/Auth';
   ],
 })
 export class UpdateComponent implements OnInit {
-  @Input() user!: UserResponse;
-  
+  @Input() paymentMethod!: PaymentMethodResponse;
+
   public form!: FormGroup;
   public isLoading = signal<boolean>(false);
-  public showPassword = signal<boolean>(false);
   public validationErrors = signal<any>(null);
 
   constructor(
     private modalController: ModalController,
     private fb: FormBuilder,
-    private updateUserAction: UpdateUserAction,
+    private updateAction: UpdatePaymentMethodAction,
     private toastService: ToastService
-  ) {
-    addIcons({ eyeOutline, eyeOffOutline });
-  }
+  ) {}
 
   ngOnInit() {
     this.form = this.fb.group({
-      Id: [this.user.Id, Validators.required],
-      FullName: [this.user.FullName],
-      Email: [this.user.Email, [Validators.email]],
-      Password: ['', [Validators.minLength(8)]],
-      IsActive: [this.user.IsActive],
+      Id: [this.paymentMethod.Id, Validators.required],
+      MethodName: [this.paymentMethod.MethodName],
+      IsActive: [this.paymentMethod.IsActive],
     });
   }
 
   getErrorMessage(controlName: string): string {
     const control = this.form.get(controlName);
     if (!control) return '';
-
-    if (control.hasError('email')) return 'Ingrese un correo electrónico válido.';
-    if (control.hasError('minlength')) return `Mínimo ${control.errors?.['minlength'].requiredLength} caracteres.`;
 
     const serverErrors = this.validationErrors()?.[controlName];
     return serverErrors ? serverErrors[0] : '';
@@ -87,28 +75,17 @@ export class UpdateComponent implements OnInit {
     return this.modalController.dismiss(null, 'cancel');
   }
 
-  togglePasswordVisibility() {
-    this.showPassword.update(v => !v);
-  }
-
   submit() {
     this.validationErrors.set(null);
-    if (this.form.invalid) {
-      return this.form.markAllAsTouched();
-    }
+    if (this.form.invalid) return this.form.markAllAsTouched();
 
     this.isLoading.set(true);
+    const request: UpdatePaymentMethodRequest = { ...this.form.value };
 
-    // Preparamos el request eliminando campos vacíos para cumplir con "solo se actualizan los que no son null"
-    const request: UpdateUserRequest = { ...this.form.value };
-    if (!request.Password || request.Password.trim() === '') delete request.Password;
-
-    this.updateUserAction.Execute(request).subscribe({
+    this.updateAction.Execute(request).subscribe({
       next: (res) => {
         this.isLoading.set(false);
-        if (res.Code === 200) {
-          this.modalController.dismiss(res.Content, 'updated');
-        }
+        if (res.Code === 200) this.modalController.dismiss(res.Content, 'updated');
       },
       error: (err) => {
         this.isLoading.set(false);
@@ -117,14 +94,10 @@ export class UpdateComponent implements OnInit {
           this.validationErrors.set(apiError.Content);
           Object.keys(apiError.Content).forEach(key => {
             const control = this.form.get(key);
-            if (control) {
-              control.setErrors({ serverError: true });
-              control.markAsTouched();
-            }
+            if (control) { control.setErrors({ serverError: true }); control.markAsTouched(); }
           });
         } else {
           const errorMsg = apiError?.Message || 'Error de conexión o servidor.';
-          this.validationErrors.set({ general: [errorMsg] });
           this.toastService.showError(errorMsg);
         }
       }

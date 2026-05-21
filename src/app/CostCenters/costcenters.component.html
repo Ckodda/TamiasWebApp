@@ -1,11 +1,11 @@
 <div class="ion-padding">
   <div class="header-container ion-margin-bottom" style="display: flex; justify-content: space-between; align-items: center;">
     <ion-text color="dark">
-      <h1 style="font-weight: 800; margin: 0;">Monedas</h1>
+      <h1 style="font-weight: 800; margin: 0;">Centros de Costo</h1>
     </ion-text>
     <ion-button color="success" (click)="openCreateModal()">
       <ion-icon slot="start" name="add-outline"></ion-icon>
-      Nueva Moneda
+      Nuevo Centro de Costo
     </ion-button>
   </div>
 
@@ -38,13 +38,13 @@
             <ion-input
               mode="md"
               fill="outline"
-              label="Nombre"
+              label="Nombre del Centro"
               labelPlacement="stacked"
-              [(ngModel)]="filters.CurrencyName"
-              placeholder="Ej: Dólar"
-              [errorText]="validationErrors()?.CurrencyName ? validationErrors().CurrencyName[0] : ''"
-              [class.ion-invalid]="validationErrors()?.CurrencyName"
-              [class.ion-touched]="validationErrors()?.CurrencyName"
+              [(ngModel)]="filters.CenterName"
+              placeholder="Ej: Ventas"
+              [errorText]="validationErrors()?.CenterName ? validationErrors().CenterName[0] : ''"
+              [class.ion-invalid]="validationErrors()?.CenterName"
+              [class.ion-touched]="validationErrors()?.CenterName"
             ></ion-input>
           </ion-col>
           <ion-col size="12" size-md="3">
@@ -53,11 +53,11 @@
               fill="outline"
               label="Código"
               labelPlacement="stacked"
-              [(ngModel)]="filters.CurrencyCode"
-              placeholder="Ej: USD"
-              [errorText]="validationErrors()?.CurrencyCode ? validationErrors().CurrencyCode[0] : ''"
-              [class.ion-invalid]="validationErrors()?.CurrencyCode"
-              [class.ion-touched]="validationErrors()?.CurrencyCode"
+              [(ngModel)]="filters.CodeCostCenter"
+              placeholder="Ej: CC001"
+              [errorText]="validationErrors()?.CodeCostCenter ? validationErrors().CodeCostCenter[0] : ''"
+              [class.ion-invalid]="validationErrors()?.CodeCostCenter"
+              [class.ion-touched]="validationErrors()?.CodeCostCenter"
             ></ion-input>
           </ion-col>
           <ion-col size="12" size-md="2">
@@ -91,13 +91,13 @@
 
   <!-- Reutilización del componente de tabla genérico -->
   <app-table
-    [items]="currencies()"
-    [columns]="currencyColumns"
+    [items]="costCenters()"
+    [columns]="costCenterColumns"
     [isLoading]="isLoading()"
     [totalCount]="totalCount()"
     [pageNumber]="filters.PageNumber!"
     [pageSize]="filters.PageSize!"
-    totalLabel="monedas"
+    totalLabel="centros de costo"
     (edit)="onTableEdit($event)"
     (delete)="onTableDelete($event)"
     (pageChange)="onTablePageChange($event)"

@@ -1,0 +1,45 @@
+<ion-header mode="ios">
+  <ion-toolbar>
+    <ion-title>Nuevo Centro de Costo</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">Cancelar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <ion-input
+      mode="md"
+      fill="outline"
+      label="Código del Centro"
+      labelPlacement="stacked"
+      formControlName="CodeCostCenter"
+      placeholder="Ej: CC001"
+      [errorText]="getErrorMessage('CodeCostCenter')"
+      class="ion-margin-bottom"
+    ></ion-input>
+
+    <ion-input
+      mode="md"
+      fill="outline"
+      label="Nombre del Centro"
+      labelPlacement="stacked"
+      formControlName="CenterName"
+      placeholder="Ej: Ventas"
+      [errorText]="getErrorMessage('CenterName')"
+      class="ion-margin-bottom"
+    ></ion-input>
+
+    <ion-text color="danger" *ngIf="validationErrors()?.general">
+      <small>{{ validationErrors().general[0] }}</small>
+    </ion-text>
+
+    <div class="ion-padding-top">
+      <ion-button expand="block" type="submit" [disabled]="isLoading()">
+        <ion-spinner slot="start" name="crescent" size="small" *ngIf="isLoading()"></ion-spinner>
+        {{ isLoading() ? 'Guardando...' : 'Crear Centro de Costo' }}
+      </ion-button>
+    </div>
+  </form>
+</ion-content>
