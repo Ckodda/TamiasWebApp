@@ -28,6 +28,10 @@ export const routes: Routes = [
      {
           path: 'payment-methods',
           loadChildren: () => import('./PaymentMethods/paymentmethods.routes').then(m => m.paymentMethodsRoutes)
+     },
+     {
+          path: 'events',
+          loadChildren: () => import('./Events/events.routes').then(m => m.eventsRoutes)
      }
 
       // Agregar más rutas aquí que requieran Navbar y Sidebar

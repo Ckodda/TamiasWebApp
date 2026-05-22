@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
@@ -9,21 +9,18 @@ import {
   IonButton,
   IonContent,
   IonInput,
-  IonSelect,
-  IonSelectOption,
   IonText,
   ModalController,
   IonSpinner
 } from '@ionic/angular/standalone';
 import { ToastService } from 'src/app/components/toast/toast.service';
-import { EventResponse } from 'src/sdk/Responses/Event/EventResponse';
-import { UpdateEventAction } from 'src/sdk/Actions/Event/UpdateEventAction';
-import { UpdateEventRequest } from 'src/sdk/Requests/Event/UpdateEventRequest';
+import { CreateEventAction } from 'src/sdk/Actions/Event/CreateEventAction';
+import { CreateEventRequest } from 'src/sdk/Requests/Event/CreateEventRequest';
 
 @Component({
-  selector: 'app-update-event',
-  templateUrl: './update.component.html',
-  styleUrls: ['./update.component.scss'],
+  selector: 'app-create-event',
+  templateUrl: './create.component.html',
+  styleUrls: ['./create.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
@@ -35,15 +32,11 @@ import { UpdateEventRequest } from 'src/sdk/Requests/Event/UpdateEventRequest';
     IonButton,
     IonContent,
     IonInput,
-    IonSelect,
-    IonSelectOption,
     IonText,
     IonSpinner
   ],
 })
-export class UpdateComponent implements OnInit {
-  @Input() event!: EventResponse;
-
+export class CreateComponent implements OnInit {
   public form!: FormGroup;
   public isLoading = signal<boolean>(false);
   public validationErrors = signal<any>(null);
@@ -51,26 +44,26 @@ export class UpdateComponent implements OnInit {
   constructor(
     private modalController: ModalController,
     private fb: FormBuilder,
-    private updateAction: UpdateEventAction,
+    private createAction: CreateEventAction,
     private toastService: ToastService
   ) {}
 
   ngOnInit() {
     this.form = this.fb.group({
-          Id: [this.event.Id, Validators.required],
-          CostCenterId: [this.event.CostCenterId, Validators.required],
-          EventName: [this.event.EventName, [Validators.required, Validators.maxLength(100)]],
-          TargetAmount: [this.event.TargetAmount, [Validators.required, Validators.min(0)]],
-          EventStatus: [this.event.EventStatus, Validators.required],
-          StartDate: [this.event.StartDate, Validators.required],
-          CurrencyId: [this.event.CurrencyId, Validators.required],
-          IsActive: [this.event.IsActive, Validators.required]
+          EventName: ['', Validators.required],
+          TargetAmount: [0, [Validators.required, Validators.min(0)]],
+          EventStatus: ['', Validators.required],
+          StartDate: ['', Validators.required],
+          CurrencyId: [null, Validators.required],
+          CostCenterId: [null, Validators.required]
     });
   }
 
   getErrorMessage(controlName: string): string {
     const control = this.form.get(controlName);
     if (!control) return '';
+
+    if (control.hasError('required')) return 'Este campo es obligatorio.';
 
     const serverErrors = this.validationErrors()?.[controlName];
     return serverErrors ? serverErrors[0] : '';
@@ -85,12 +78,14 @@ export class UpdateComponent implements OnInit {
     if (this.form.invalid) return this.form.markAllAsTouched();
 
     this.isLoading.set(true);
-    const request: UpdateEventRequest = { ...this.form.value };
+    const request: CreateEventRequest = this.form.value;
 
-    this.updateAction.Execute(request).subscribe({
+    this.createAction.Execute(request).subscribe({
       next: (res) => {
         this.isLoading.set(false);
-        if (res.Code === 200) this.modalController.dismiss(res.Content, 'updated');
+        if (res.Code === 201 || res.Code === 200) {
+          this.modalController.dismiss(res.Content, 'created');
+        }
       },
       error: (err) => {
         this.isLoading.set(false);

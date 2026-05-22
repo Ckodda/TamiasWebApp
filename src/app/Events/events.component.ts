@@ -1,51 +1,49 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import {
   IonGrid,
   IonRow,
   IonCol,
-  IonItem,
-  IonLabel,
   IonInput,
   IonSelect,
+  IonContent,
   IonSelectOption,
   IonButton,
   IonIcon,
   IonBadge,
   IonText,
   IonCard,
-  ModalController,
   IonCardHeader,
   IonCardTitle,
   IonCardContent,
   IonSpinner,
-  IonContent
+  ModalController,
 } from '@ionic/angular/standalone';
 import { ToastService } from '../components/toast/toast.service';
 import { addIcons } from 'ionicons';
 import { searchOutline, refreshOutline, filterOutline, addOutline } from 'ionicons/icons';
-import { GetCurrenciesAction } from 'src/sdk/Actions/Currency/GetCurrenciesAction';
-import { GetCurrenciesRequest } from 'src/sdk/Requests/Currency/GetCurrenciesRequest';
-import { CurrencyResponse } from 'src/sdk/Responses/Currency/CurrencyResponse';
-import { CreateComponent } from 'src/app/Currencies/CreateCurrency/create.component';
-import { UpdateComponent } from 'src/app/Currencies/UpdateCurrency/update.component';
 import { TableComponent, TableColumn } from '../components/table/table.component';
-import { FormsModule } from '@angular/forms';
+import { EventResponse } from 'src/sdk/Responses/Event/EventResponse';
+import { GetEventsAction } from 'src/sdk/Actions/Event/GetEventsAction';
+import { GetEventsRequest } from 'src/sdk/Requests/Event/GetEventsRequest';
+import { CreateComponent } from './CreateEvent/create.component';
+import { UpdateComponent } from './UpdateEvent/update.component';
 
 @Component({
-  selector: 'app-currencies',
+  selector: 'app-events',
+  templateUrl: './events.component.html',
+  styleUrls: ['./events.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
-    // FormsModule se mantiene para los filtros
-    FormsModule, 
+    FormsModule,
     IonGrid,
     IonRow,
     IonCol,
-    IonItem,
-    IonLabel,
     IonInput,
     IonSelect,
+    IonContent,
     IonSelectOption,
     IonButton,
     IonIcon,
@@ -57,29 +55,27 @@ import { FormsModule } from '@angular/forms';
     IonCardContent,
     IonSpinner,
     TableComponent,
-    IonContent
   ],
-  templateUrl: './currencies.component.html',
-  styleUrl: './currencies.component.scss',
 })
-export class CurrenciesComponent implements OnInit {
-  public currencies = signal<CurrencyResponse[]>([]);
+export class EventsComponent implements OnInit {
+  public events = signal<EventResponse[]>([]);
+  public eventColumns: TableColumn[] = [];
   public totalCount = signal<number>(0);
   public isLoading = signal<boolean>(false);
   public validationErrors = signal<any>(null);
-  public currencyColumns: TableColumn[] = [];
-  
-  public filters: GetCurrenciesRequest = {
-    Id: undefined,
-    CurrencyName: '',
-    CurrencyCode: '',
-    IsActive: null, // Ahora el tipo es más estricto, no necesitamos 'as any'
-    PageNumber: 1,
-    PageSize: 10
+
+  public filters: GetEventsRequest = {
+     Id: undefined,
+     EventName: '',
+     CurrencyId: undefined,
+     StartDate: undefined,
+     IsActive: null,
+     PageNumber: 1,
+     PageSize: 10,
   };
 
   constructor(
-    private getCurrenciesAction: GetCurrenciesAction,
+    private getEventsAction: GetEventsAction,
     private modalController: ModalController,
     private toastService: ToastService
   ) {
@@ -87,13 +83,14 @@ export class CurrenciesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.currencyColumns = [
+    this.eventColumns = [
       { key: 'Id', label: 'Id', size: '12', sizeMd: '1' },
-      { key: 'CurrencyCode', label: 'Código', size: '12', sizeMd: '1' },
-      { key: 'CurrencyName', label: 'Nombre', size: '12', sizeMd: '4' },
-      { key: 'CurrencySymbol', label: 'Símbolo', size: '12', sizeMd: '2' },
-      { key: 'IsActive', label: 'Estado', size: '6', sizeMd: '2', type: 'badge', cssClass: 'ion-text-center' },
-      { key: 'actions', label: 'Acciones', size: '6', sizeMd: '2', type: 'actions', cssClass: 'ion-text-center' }
+      { key: 'EventName', label: 'Nombre', size: '12', sizeMd: '3' },
+      { key: 'TargetAmount', label: 'Monto', size: '12', sizeMd: '2' },
+      { key: 'EventStatus', label: 'Estado', size: '12', sizeMd: '1' },
+      { key: 'StartDate', label: 'Inicio', size: '12', sizeMd: '2' },
+      { key: 'IsActive', label: 'Activo', size: '6', sizeMd: '1', type: 'badge', cssClass: 'ion-text-center' },
+      { key: 'actions', label: 'Acciones', size: '6', sizeMd: '2', type: 'actions', cssClass: 'ion-text-center' },
     ];
     this.LoadData();
   }
@@ -102,27 +99,34 @@ export class CurrenciesComponent implements OnInit {
     this.isLoading.set(true);
     this.validationErrors.set(null);
 
-    this.getCurrenciesAction.Execute(this.filters).subscribe({
+    this.getEventsAction.Execute(this.filters).subscribe({
       next: (response) => {
         if (response.Code === 200 && response.Content) {
-          this.currencies.set(response.Content.Items);
+          this.events.set(response.Content.Items);
           this.totalCount.set(response.Content.TotalCount);
         }
         this.isLoading.set(false);
       },
       error: (err) => {
-        // Accedemos al cuerpo de la respuesta de error enviada por el servidor
         const apiError = err.error;
         if (apiError && apiError.Code === 422 && apiError.Content) {
           this.validationErrors.set(apiError.Content);
         }
         this.isLoading.set(false);
-      }
+      },
     });
   }
 
   ResetFilters() {
-    this.filters = { Id: undefined, CurrencyName: '', CurrencyCode: '', IsActive: null, PageNumber: 1, PageSize: 10 };
+    this.filters = {
+     Id: undefined,
+     EventName: '',
+     CurrencyId: undefined,
+     StartDate: new Date().toISOString().split('T')[0],
+     IsActive: null,
+     PageNumber: 1,
+     PageSize: 10,
+    };
     this.LoadData();
   }
 
@@ -137,12 +141,12 @@ export class CurrenciesComponent implements OnInit {
     this.LoadData();
   }
 
-  onTableEdit(item: CurrencyResponse) {
+  onTableEdit(item: EventResponse) {
     this.openUpdateModal(item);
   }
 
-  onTableDelete(item: CurrencyResponse) {
-    // Implementar lógica de eliminación
+  onTableDelete(item: EventResponse) {
+    // Implementar lógica de eliminación futura
   }
 
   async openCreateModal() {
@@ -159,10 +163,10 @@ export class CurrenciesComponent implements OnInit {
     }
   }
 
-  async openUpdateModal(currency: CurrencyResponse) {
+  async openUpdateModal(event: EventResponse) {
     const modal = await this.modalController.create({
       component: UpdateComponent,
-      componentProps: { currency },
+      componentProps: { event },
       breakpoints: [0, 0.5, 0.8],
       initialBreakpoint: 0.8
     });

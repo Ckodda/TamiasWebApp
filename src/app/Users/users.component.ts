@@ -16,7 +16,8 @@ import {
      IonCardHeader,
      IonCardTitle,
      IonCardContent,
-     IonSpinner
+     IonSpinner,
+     IonContent
 } from '@ionic/angular/standalone';
 import { ToastService } from "../components/toast/toast.service";
 import { addIcons } from 'ionicons';
@@ -54,7 +55,8 @@ import { FormsModule } from "@angular/forms";
           IonCardContent,
           IonSpinner,
           TableComponent, // Importamos el componente de tabla genérico
-          UpdateComponent
+          UpdateComponent,
+          IonContent,
      ]
 })
 export class UsersComponent implements OnInit

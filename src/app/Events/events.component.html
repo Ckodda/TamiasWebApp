@@ -1,11 +1,11 @@
 <ion-content class="ion-padding">
   <div class="header-container ion-margin-bottom" style="display: flex; justify-content: space-between; align-items: center;">
     <ion-text color="dark">
-      <h1 style="font-weight: 800; margin: 0;">Usuarios</h1>
+      <h1 style="font-weight: 800; margin: 0;">Eventos</h1>
     </ion-text>
     <ion-button color="success" (click)="openCreateModal()">
       <ion-icon slot="start" name="add-outline"></ion-icon>
-      Nuevo Usuario
+      Nuevo Evento
     </ion-button>
   </div>
 
@@ -20,7 +20,7 @@
     <ion-card-content>
       <ion-grid>
         <ion-row>
-          <ion-col size="12" size-md="2">
+          <ion-col size="12" size-md="1">
             <ion-input
               mode="md"
               fill="outline"
@@ -34,30 +34,32 @@
               [class.ion-touched]="validationErrors()?.Id"
             ></ion-input>
           </ion-col>
-          <ion-col size="12" size-md="3">
+
+          <ion-col size="12" size-md="4">
             <ion-input
               mode="md"
               fill="outline"
-              label="Nombre Completo"
+              label="Nombre del Evento"
               labelPlacement="stacked"
-              [(ngModel)]="filters.FullName"
-              placeholder="Ej: Juan Pérez"
-              [errorText]="validationErrors()?.FullName ? validationErrors().FullName[0] : ''"
-              [class.ion-invalid]="validationErrors()?.FullName"
-              [class.ion-touched]="validationErrors()?.FullName"
+              [(ngModel)]="filters.EventName"
+              placeholder="Ej: Concierto, Conferencia..."
+              [errorText]="validationErrors()?.EventName ? validationErrors().EventName[0] : ''"
+              [class.ion-invalid]="validationErrors()?.EventName"
+              [class.ion-touched]="validationErrors()?.EventName"
             ></ion-input>
           </ion-col>
+
           <ion-col size="12" size-md="3">
             <ion-input
               mode="md"
               fill="outline"
-              label="Correo Electrónico"
+              label="Fecha de Inicio"
               labelPlacement="stacked"
-              [(ngModel)]="filters.Email"
-              placeholder="Ej: juan.perez@example.com"
-              [errorText]="validationErrors()?.Email ? validationErrors().Email[0] : ''"
-              [class.ion-invalid]="validationErrors()?.Email"
-              [class.ion-touched]="validationErrors()?.Email"
+              type="date"
+              [(ngModel)]="filters.StartDate"
+              [errorText]="validationErrors()?.StartDate ? validationErrors().StartDate[0] : ''"
+              [class.ion-invalid]="validationErrors()?.StartDate"
+              [class.ion-touched]="validationErrors()?.StartDate"
             ></ion-input>
           </ion-col>
           <ion-col size="12" size-md="2">
@@ -77,12 +79,13 @@
               <ion-select-option [value]="false">Inactivo</ion-select-option>
             </ion-select>
           </ion-col>
+
           <ion-col size="12" size-md="2" class="ion-align-self-center">
-            <ion-button expand="block" (click)="LoadData()" [disabled]="isLoading()">
-              <ion-icon slot="start" name="search-outline" *ngIf="!isLoading()"></ion-icon>
-              <ion-spinner slot="start" name="crescent" size="small" *ngIf="isLoading()"></ion-spinner>
-              {{ isLoading() ? 'Buscando...' : 'Buscar' }}
-            </ion-button>
+              <ion-button expand="block" (click)="LoadData()" [disabled]="isLoading()">
+                <ion-icon slot="start" name="search-outline" *ngIf="!isLoading()"></ion-icon>
+                <ion-spinner slot="start" name="crescent" size="small" *ngIf="isLoading()"></ion-spinner>
+                {{ isLoading() ? 'Buscando...' : 'Buscar' }}
+              </ion-button>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -90,17 +93,17 @@
   </ion-card>
 
   <!-- Reutilización del componente de tabla genérico -->
-  <app-table
-    [items]="users()"
-    [columns]="userColumns"
-    [isLoading]="isLoading()"
-    [totalCount]="totalCount()"
-    [pageNumber]="filters.PageNumber!"
-    [pageSize]="filters.PageSize!"
-    totalLabel="usuarios"
-    (edit)="onTableEdit($event)"
-    (delete)="onTableDelete($event)"
-    (pageChange)="onTablePageChange($event)"
-    (pageSizeChange)="onTablePageSizeChange($event)"
-  ></app-table>
+     <app-table
+     [items]="events()"
+     [columns]="eventColumns"
+     [isLoading]="isLoading()"
+     [totalCount]="totalCount()"
+     [pageNumber]="filters.PageNumber!"
+     [pageSize]="filters.PageSize!"
+     [totalLabel]="'eventos'"
+     (edit)="onTableEdit($event)"
+     (delete)="onTableDelete($event)"
+     (pageChange)="onTablePageChange($event)"
+     (pageSizeChange)="onTablePageSizeChange($event)"
+     ></app-table>
 </ion-content>

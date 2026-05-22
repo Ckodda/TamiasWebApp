@@ -16,6 +16,9 @@ import {
   IonSpinner
 } from '@ionic/angular/standalone';
 import { ToastService } from 'src/app/components/toast/toast.service';
+import { UpdatePaymentMethodAction } from 'src/sdk/Actions/PaymentMethod/UpdatePaymentMethodAction';
+import { UpdatePaymentMethodRequest } from 'src/sdk/Requests/PaymentMethod/UpdatePaymentMethodRequest';
+import { PaymentMethodResponse } from 'src/sdk/Responses/PaymentMethod/PaymentMethodResponse';
 import { EventResponse } from 'src/sdk/Responses/Event/EventResponse';
 import { UpdateEventAction } from 'src/sdk/Actions/Event/UpdateEventAction';
 import { UpdateEventRequest } from 'src/sdk/Requests/Event/UpdateEventRequest';
@@ -57,14 +60,12 @@ export class UpdateComponent implements OnInit {
 
   ngOnInit() {
     this.form = this.fb.group({
-          Id: [this.event.Id, Validators.required],
-          CostCenterId: [this.event.CostCenterId, Validators.required],
-          EventName: [this.event.EventName, [Validators.required, Validators.maxLength(100)]],
-          TargetAmount: [this.event.TargetAmount, [Validators.required, Validators.min(0)]],
-          EventStatus: [this.event.EventStatus, Validators.required],
-          StartDate: [this.event.StartDate, Validators.required],
-          CurrencyId: [this.event.CurrencyId, Validators.required],
-          IsActive: [this.event.IsActive, Validators.required]
+      Id: [this.event.Id, Validators.required],
+      EventName: [this.event.EventName],
+      CurrencyId: [this.event.CurrencyId],
+      StartDate: [this.event.StartDate],
+      TargetAmount: [this.event.TargetAmount],
+      IsActive: [this.event.IsActive],
     });
   }
 

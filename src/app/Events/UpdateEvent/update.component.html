@@ -1,0 +1,97 @@
+<ion-header mode="ios">
+  <ion-toolbar>
+    <ion-title>Editar Evento</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">Cancelar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <ion-input
+      mode="md"
+      fill="outline"
+      label="Nombre del Evento"
+      labelPlacement="stacked"
+      formControlName="EventName"
+      placeholder="Ej: Lanzamiento de producto"
+      [errorText]="getErrorMessage('EventName')"
+      class="ion-margin-bottom"
+    ></ion-input>
+
+    <ion-input
+      mode="md"
+      fill="outline"
+      label="Monto Objetivo"
+      labelPlacement="stacked"
+      type="number"
+      formControlName="TargetAmount"
+      placeholder="0.00"
+      [errorText]="getErrorMessage('TargetAmount')"
+      class="ion-margin-bottom"
+    ></ion-input>
+
+    <ion-input
+      mode="md"
+      fill="outline"
+      label="Fecha de Inicio"
+      labelPlacement="stacked"
+      type="date"
+      formControlName="StartDate"
+      [errorText]="getErrorMessage('StartDate')"
+      class="ion-margin-bottom"
+    ></ion-input>
+
+    <ion-select
+      mode="md"
+      fill="outline"
+      label="Centro de Costo"
+      labelPlacement="stacked"
+      formControlName="CostCenterId"
+      interface="popover"
+      [errorText]="getErrorMessage('CostCenterId')"
+      class="ion-margin-bottom"
+    >
+      <!-- Nota: Se deben cargar las opciones desde el componente -->
+    </ion-select>
+
+    <ion-select
+      mode="md"
+      fill="outline"
+      label="Moneda"
+      labelPlacement="stacked"
+      formControlName="CurrencyId"
+      interface="popover"
+      [errorText]="getErrorMessage('CurrencyId')"
+      class="ion-margin-bottom"
+    >
+      <!-- Nota: Se deben cargar las opciones desde el componente -->
+    </ion-select>
+
+    <ion-select
+      mode="md"
+      fill="outline"
+      label="Activo"
+      labelPlacement="stacked"
+      formControlName="IsActive"
+      interface="popover"
+      [errorText]="getErrorMessage('IsActive')"
+      class="ion-margin-bottom"
+    >
+      <ion-select-option [value]="true">Activo</ion-select-option>
+      <ion-select-option [value]="false">Inactivo</ion-select-option>
+    </ion-select>
+
+    <ion-text color="danger" *ngIf="validationErrors()?.general">
+      <small>{{ validationErrors().general[0] }}</small>
+    </ion-text>
+
+    <div class="ion-padding-top">
+      <ion-button expand="block" type="submit" [disabled]="isLoading()">
+        <ion-spinner slot="start" name="crescent" size="small" *ngIf="isLoading()"></ion-spinner>
+        {{ isLoading() ? 'Guardando...' : 'Actualizar Evento' }}
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

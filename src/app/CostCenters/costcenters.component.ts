@@ -17,7 +17,8 @@ import {
   IonCardTitle,
   IonCardContent,
   IonSpinner,
-  ModalController
+  ModalController,
+  IonContent
 } from '@ionic/angular/standalone';
 import { ToastService } from '../components/toast/toast.service';
 import { addIcons } from 'ionicons';
@@ -55,6 +56,7 @@ import { UpdateComponent } from './UpdateCostCenter/update.component';
     CreateComponent, // Importamos el componente de creación
     UpdateComponent,
     TableComponent,
+    IonContent
   ],
 })
 export class CostCentersComponent implements OnInit {

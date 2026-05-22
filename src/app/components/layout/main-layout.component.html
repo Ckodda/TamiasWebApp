@@ -18,11 +18,11 @@
   </ion-content>
 </ion-menu>
 
-<div class="ion-page" id="main-content">
+<div class="ion-page" id="main-content" style="display: flex; flex-direction: column;">
   <ion-header>
     <app-navbar></app-navbar>
   </ion-header>
-  <ion-content>
+  <div style="flex: 1; position: relative;">
     <ion-router-outlet></ion-router-outlet>
-  </ion-content>
+  </div>
 </div>

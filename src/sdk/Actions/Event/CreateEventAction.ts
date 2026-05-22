@@ -1,0 +1,32 @@
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { AuthStorage } from "../Auth/AuthStorage";
+import { Observable, throwError } from "rxjs";
+import { ApiResponse } from "src/sdk/Responses/ApiResponse";
+import { TAMIAS_AUTH_ENDPOINTS } from "src/sdk/api.config";
+import { EventResponse } from "src/sdk/Responses/Event/EventResponse";
+import { CreateEventRequest } from "src/sdk/Requests/Event/CreateEventRequest";
+
+@Injectable({
+     providedIn: 'root'
+})
+export class CreateEventAction
+{
+     constructor(private http: HttpClient)
+     { }
+
+     Execute(request: CreateEventRequest): Observable<ApiResponse<EventResponse>>
+     {
+          const token = AuthStorage.GetAccessToken();
+          if (!token) {
+               return throwError(() => ({ Message: "No se encontró un token de acceso válido." }));
+          }
+
+          const headers = new HttpHeaders({
+               Authorization: `Bearer ${token}`,
+          });
+          const url = `${TAMIAS_AUTH_ENDPOINTS.events}`;
+
+          return this.http.post<ApiResponse<EventResponse>>(url, request, { headers });
+     }
+}
