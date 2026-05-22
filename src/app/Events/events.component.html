@@ -1,7 +1,7 @@
 <ion-content class="ion-padding">
-  <div class="header-container ion-margin-bottom" style="display: flex; justify-content: space-between; align-items: center;">
+  <div class="header-container ion-margin-bottom ion-flex ion-justify-content-between ion-align-items-center">
     <ion-text color="dark">
-      <h1 style="font-weight: 800; margin: 0;">Eventos</h1>
+      <h1 class="bold-title ion-no-margin">Eventos</h1>
     </ion-text>
     <ion-button color="success" (click)="openCreateModal()">
       <ion-icon slot="start" name="add-outline"></ion-icon>
@@ -10,14 +10,14 @@
   </div>
 
   <!-- Sección de Filtros -->
-  <ion-card class="ion-no-margin ion-margin-bottom">
+  <ion-card class="ion-no-margin ion-margin-bottom allow-overflow">
     <ion-card-header>
-      <ion-card-title style="font-size: 1rem; display: flex; align-items: center;">
+      <ion-card-title class="filter-card-title ion-flex ion-align-items-center">
         <ion-icon name="filter-outline" slot="start" class="ion-margin-end"></ion-icon>
         Filtros de búsqueda
       </ion-card-title>
     </ion-card-header>
-    <ion-card-content>
+    <ion-card-content class="allow-overflow">
       <ion-grid>
         <ion-row>
           <ion-col size="12" size-md="1">
@@ -35,7 +35,7 @@
             ></ion-input>
           </ion-col>
 
-          <ion-col size="12" size-md="4">
+          <ion-col size="12" size-md="3">
             <ion-input
               mode="md"
               fill="outline"
@@ -49,7 +49,68 @@
             ></ion-input>
           </ion-col>
 
-          <ion-col size="12" size-md="3">
+          <ion-col size="12" size-md="2" class="ion-position-relative">
+            <!-- Chip de moneda seleccionada -->
+            <ion-chip *ngIf="selectedCurrency()" 
+                      (click)="clearCurrencySelection()" 
+                      class="ion-no-margin ion-justify-content-between ion-align-items-center"
+                      style="width: 100%; height: 56px;">
+              <ion-label class="ion-text-wrap">
+                <div class="ion-text-uppercase" style="font-weight: bold; font-size: 0.9rem;">
+                  {{ selectedCurrency()?.CurrencyCode }}
+                </div>
+                <ion-note style="font-size: 0.75rem;">{{ selectedCurrency()?.CurrencyName }}</ion-note>
+              </ion-label>
+              <ion-icon name="close-circle"></ion-icon>
+            </ion-chip>
+
+            <!-- Input de búsqueda (solo se muestra si no hay selección) -->
+            <ion-input
+              *ngIf="!selectedCurrency()"
+              id="currency-search-input"
+              mode="md"
+              fill="outline"
+              label="Moneda (Mín. 3 car.)"
+              labelPlacement="stacked"
+              [value]="currencySearchTerm()"
+              (ionInput)="onCurrencyInput($event)"
+              placeholder="Ej: USD, PEN..."
+            ></ion-input>
+
+            <!-- Usamos ion-popover para que flote sobre la tabla sin ser tapado -->
+            <ion-popover 
+              trigger="currency-search-input" 
+              triggerAction="context-menu"
+              [isOpen]="showCurrencyDropdown()"
+              (didDismiss)="showCurrencyDropdown.set(false)"
+              side="bottom"
+              alignment="start"
+              [dismissOnSelect]="true"
+              class="currency-popover">
+              <ng-template>
+                <ion-content>
+                  <ion-list class="ion-no-padding">
+                    <ion-item *ngIf="isSearchingCurrencies()" lines="none" class="ion-text-center">
+                      <ion-spinner name="crescent" class="ion-margin-auto"></ion-spinner>
+                    </ion-item>
+                    <ng-container *ngIf="!isSearchingCurrencies()">
+                      <ion-item button *ngFor="let curr of currencies()" (click)="selectCurrency(curr)">
+                        <ion-label>
+                          <h2>{{ curr.CurrencyCode }}</h2>
+                          <p>{{ curr.CurrencyName }}</p>
+                        </ion-label>
+                      </ion-item>
+                      <ion-item *ngIf="currencies().length === 0" lines="none">
+                        <ion-label color="medium">No hay resultados</ion-label>
+                      </ion-item>
+                    </ng-container>
+                  </ion-list>
+                </ion-content>
+              </ng-template>
+            </ion-popover>
+          </ion-col>
+
+          <ion-col size="12" size-md="2">
             <ion-input
               mode="md"
               fill="outline"

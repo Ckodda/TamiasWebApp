@@ -37,3 +37,48 @@
 @import '@ionic/angular/css/palettes/dark.system.css';
 
 @import 'app/components/toast/toast.component.scss';
+
+/* Layout y Estructura Principal */
+#main-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content-wrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Utilidad para permitir que elementos absolutos (como dropdowns) se vean fuera del contenedor */
+.allow-overflow {
+  overflow: visible !important;
+}
+
+.ion-position-relative {
+  position: relative !important;
+}
+
+/* Tipografía */
+.bold-title {
+  font-weight: 800;
+}
+
+.filter-card-title {
+  font-size: 1rem;
+}
+
+/* Componentes de Autocompletado */
+.currency-popover {
+  --width: 250px;
+  --box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  ion-content {
+    --background: var(--ion-background-color, #fff);
+  }
+}
+
+/* Utilidades adicionales (si no están cargadas por defecto) */
+.ion-flex {
+  display: flex !important;
+}

@@ -1,6 +1,8 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import {
   IonGrid,
   IonRow,
@@ -19,16 +21,24 @@ import {
   IonCardContent,
   IonSpinner,
   ModalController,
+  IonPopover,
+  IonList,
+  IonItem,
+  IonLabel,
+  IonChip,
+  IonNote,
 } from '@ionic/angular/standalone';
 import { ToastService } from '../components/toast/toast.service';
 import { addIcons } from 'ionicons';
-import { searchOutline, refreshOutline, filterOutline, addOutline } from 'ionicons/icons';
+import { searchOutline, refreshOutline, filterOutline, addOutline, closeCircle } from 'ionicons/icons';
 import { TableComponent, TableColumn } from '../components/table/table.component';
 import { EventResponse } from 'src/sdk/Responses/Event/EventResponse';
 import { GetEventsAction } from 'src/sdk/Actions/Event/GetEventsAction';
 import { GetEventsRequest } from 'src/sdk/Requests/Event/GetEventsRequest';
 import { CreateComponent } from './CreateEvent/create.component';
 import { UpdateComponent } from './UpdateEvent/update.component';
+import { CurrencyResponse } from 'src/sdk/Responses/Currency/CurrencyResponse';
+import { GetCurrenciesAction } from 'src/sdk/Actions/Currency/GetCurrenciesAction';
 
 @Component({
   selector: 'app-events',
@@ -55,6 +65,12 @@ import { UpdateComponent } from './UpdateEvent/update.component';
     IonCardContent,
     IonSpinner,
     TableComponent,
+    IonPopover,
+    IonList,
+    IonItem,
+    IonLabel,
+    IonChip,
+    IonNote,
   ],
 })
 export class EventsComponent implements OnInit {
@@ -63,7 +79,13 @@ export class EventsComponent implements OnInit {
   public totalCount = signal<number>(0);
   public isLoading = signal<boolean>(false);
   public validationErrors = signal<any>(null);
-
+  public currencies = signal<CurrencyResponse[]>([]);
+  public selectedCurrency = signal<CurrencyResponse | null>(null);
+  public isSearchingCurrencies = signal<boolean>(false);
+  public showCurrencyDropdown = signal<boolean>(false);
+  // La propiedad para el término de búsqueda de la moneda
+  public currencySearchTerm = signal<string>('');
+  private currencySearch$ = new Subject<string>();
   public filters: GetEventsRequest = {
      Id: undefined,
      EventName: '',
@@ -76,13 +98,15 @@ export class EventsComponent implements OnInit {
 
   constructor(
     private getEventsAction: GetEventsAction,
+    private getCurrenciesAction: GetCurrenciesAction,
     private modalController: ModalController,
     private toastService: ToastService
   ) {
-    addIcons({ searchOutline, refreshOutline, filterOutline, addOutline });
+    addIcons({ searchOutline, refreshOutline, filterOutline, addOutline, closeCircle });
   }
 
   ngOnInit() {
+    this.setupCurrencySearch();
     this.eventColumns = [
       { key: 'Id', label: 'Id', size: '12', sizeMd: '1' },
       { key: 'EventName', label: 'Nombre', size: '12', sizeMd: '3' },
@@ -95,6 +119,34 @@ export class EventsComponent implements OnInit {
     this.LoadData();
   }
 
+  private setupCurrencySearch() {
+    this.currencySearch$.pipe(
+      debounceTime(400),
+      distinctUntilChanged()
+    ).subscribe(term => {
+      if (term.length >= 3) {
+        this.isSearchingCurrencies.set(true);
+        // Buscamos monedas por el término ingresado
+        this.getCurrenciesAction.Execute({ CurrencyCode: term }).subscribe({
+          next: (response) => {
+            if (response.Code === 200 && response.Content) {
+              this.currencies.set(response.Content.Items);
+            }
+            this.isSearchingCurrencies.set(false);
+          },
+          error: () => {
+            this.isSearchingCurrencies.set(false);
+            this.currencies.set([]);
+          }
+        });
+      } else {
+        this.currencies.set([]);
+        this.isSearchingCurrencies.set(false);
+        this.showCurrencyDropdown.set(false);
+      }
+    });
+  }
+
   LoadData() {
     this.isLoading.set(true);
     this.validationErrors.set(null);
@@ -105,16 +157,55 @@ export class EventsComponent implements OnInit {
           this.events.set(response.Content.Items);
           this.totalCount.set(response.Content.TotalCount);
         }
-        this.isLoading.set(false);
+        this.isLoading.set(false); // Desactivar spinner principal
       },
       error: (err) => {
         const apiError = err.error;
         if (apiError && apiError.Code === 422 && apiError.Content) {
           this.validationErrors.set(apiError.Content);
         }
-        this.isLoading.set(false);
+        this.isLoading.set(false); // Desactivar spinner principal en caso de error
       },
     });
+  }
+
+  // Maneja la entrada del usuario en el campo de búsqueda de moneda
+  onCurrencyInput(event: any) {
+    const val = event.target.value;
+    this.currencySearchTerm.set(val);
+    
+    if (val.length >= 3) {
+      this.showCurrencyDropdown.set(true); // Mostrar dropdown si hay al menos 3 caracteres
+    } else {
+      this.showCurrencyDropdown.set(false); // Ocultar dropdown si hay menos de 3 caracteres
+      this.currencies.set([]); // Limpiar resultados
+    }
+
+    this.currencySearch$.next(val);
+    
+    // Si se limpia el texto, eliminamos el filtro de ID
+    if (!val) {
+      this.filters.CurrencyId = undefined;
+      this.isSearchingCurrencies.set(false);
+      this.showCurrencyDropdown.set(false); // Asegurarse de ocultar el dropdown
+    }
+  }
+
+  // Selecciona una moneda de la lista desplegable
+  selectCurrency(currency: CurrencyResponse) {
+    this.filters.CurrencyId = currency.Id;
+    this.selectedCurrency.set(currency);
+    this.currencySearchTerm.set('');
+    this.currencies.set([]); // Cerramos la lista al seleccionar
+    this.isSearchingCurrencies.set(false);
+    this.showCurrencyDropdown.set(false); // Ocultar dropdown al seleccionar
+  }
+
+  // Limpia la selección y vuelve al modo búsqueda
+  clearCurrencySelection() {
+    this.filters.CurrencyId = undefined;
+    this.selectedCurrency.set(null);
+    this.currencySearchTerm.set('');
   }
 
   ResetFilters() {
@@ -122,11 +213,16 @@ export class EventsComponent implements OnInit {
      Id: undefined,
      EventName: '',
      CurrencyId: undefined,
-     StartDate: new Date().toISOString().split('T')[0],
+     StartDate: undefined,
      IsActive: null,
      PageNumber: 1,
      PageSize: 10,
     };
+    this.currencySearchTerm.set('');
+    this.selectedCurrency.set(null);
+    this.currencies.set([]);
+    this.isSearchingCurrencies.set(false);
+    this.showCurrencyDropdown.set(false);
     this.LoadData();
   }
 

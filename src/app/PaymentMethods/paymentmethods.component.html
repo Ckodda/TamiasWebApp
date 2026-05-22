@@ -1,7 +1,7 @@
 <ion-content class="ion-padding">
-  <div class="header-container ion-margin-bottom" style="display: flex; justify-content: space-between; align-items: center;">
+  <div class="header-container ion-margin-bottom ion-flex ion-justify-content-between ion-align-items-center">
     <ion-text color="dark">
-      <h1 style="font-weight: 800; margin: 0;">Métodos de Pago</h1>
+      <h1 class="bold-title ion-no-margin">Métodos de Pago</h1>
     </ion-text>
     <ion-button color="success" (click)="openCreateModal()">
       <ion-icon slot="start" name="add-outline"></ion-icon>
@@ -12,7 +12,7 @@
   <!-- Sección de Filtros -->
   <ion-card class="ion-no-margin ion-margin-bottom">
     <ion-card-header>
-      <ion-card-title style="font-size: 1rem; display: flex; align-items: center;">
+      <ion-card-title class="filter-card-title ion-flex ion-align-items-center">
         <ion-icon name="filter-outline" slot="start" class="ion-margin-end"></ion-icon>
         Filtros de búsqueda
       </ion-card-title>
