@@ -33,7 +33,6 @@ import { GetEventsAction } from 'src/sdk/Actions/Event/GetEventsAction';
 @Component({
   selector: 'app-update-event',
   templateUrl: './update.component.html',
-  styleUrls: ['./update.component.scss'],
   standalone: true,
   imports: [
     CommonModule,

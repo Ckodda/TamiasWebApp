@@ -36,7 +36,6 @@ import { SearchableSelectComponent } from '../components/searchable/searchable-s
 @Component({
   selector: 'app-events',
   templateUrl: './events.component.html',
-  styleUrls: ['./events.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
@@ -92,12 +91,14 @@ export class EventsComponent implements OnInit {
   ngOnInit() {
     this.eventColumns = [
       { key: 'Id', label: 'Id', size: '12', sizeMd: '1' },
-      { key: 'EventName', label: 'Nombre', size: '12', sizeMd: '3' },
-      { key: 'TargetAmount', label: 'Monto', size: '12', sizeMd: '2' },
+      { key: 'EventName', label: 'Nombre', size: '12', sizeMd: '2' }, // 2
+      { key: 'TargetAmount', label: 'Monto', size: '12', sizeMd: '1' }, // 1
+      { key: 'CurrencyCode', label: 'Moneda', size: '12', sizeMd: '1' },
+      { key: 'CenterName', label: 'Centro de Costo', size: '12', sizeMd: '2' },
       { key: 'EventStatus', label: 'Estado', size: '12', sizeMd: '1' },
-      { key: 'StartDate', label: 'Inicio', size: '12', sizeMd: '2' },
-      { key: 'IsActive', label: 'Activo', size: '6', sizeMd: '1', type: 'badge', cssClass: 'ion-text-center' },
-      { key: 'actions', label: 'Acciones', size: '6', sizeMd: '2', type: 'actions', cssClass: 'ion-text-center' },
+      { key: 'StartDate', label: 'Inicio', size: '12', sizeMd: '1' }, // Reducido a 1
+      { key: 'IsActive', label: 'Activo', size: '6', sizeMd: '1', type: 'badge', cssClass: 'ion-text-start' },      
+      { key: 'actions', label: 'Acciones', size: '6', sizeMd: '2', type: 'actions', cssClass: 'ion-text-end' },
     ];
   }
 

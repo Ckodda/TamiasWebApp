@@ -1,7 +1,7 @@
 <ion-content class="ion-padding">
-  <div class="header-container ion-margin-bottom ion-flex ion-justify-content-between ion-align-items-center">
+  <div class="ion-margin-bottom ion-flex ion-justify-content-between ion-align-items-center ion-flex-wrap" style="gap: 10px;">
     <ion-text color="dark">
-      <h1 class="bold-title ion-no-margin">Eventos</h1>
+      <h1 class="ion-no-margin" style="font-weight: bold;">Eventos</h1>
     </ion-text>
     <ion-button color="success" (click)="navigateToCreate()">
       <ion-icon slot="start" name="add-outline"></ion-icon>
@@ -10,14 +10,14 @@
   </div>
 
   <!-- Sección de Filtros -->
-  <ion-card class="ion-no-margin ion-margin-bottom allow-overflow">
+  <ion-card class="ion-no-margin ion-margin-bottom" style="overflow: visible;">
     <ion-card-header>
-      <ion-card-title class="filter-card-title ion-flex ion-align-items-center">
+      <ion-card-title class="ion-flex ion-align-items-center" style="font-size: 1.1rem; font-weight: 600;">
         <ion-icon name="filter-outline" slot="start" class="ion-margin-end"></ion-icon>
         Filtros de búsqueda
       </ion-card-title>
     </ion-card-header>
-    <ion-card-content class="allow-overflow">
+    <ion-card-content style="overflow: visible;">
       <ion-grid>
         <ion-row>
           <ion-col size="12" size-md="1">

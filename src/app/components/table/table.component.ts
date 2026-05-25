@@ -12,7 +12,11 @@ import {
   IonSelect,
   IonSelectOption,
   IonSpinner,
-  IonCard
+  IonCard,
+  IonList,
+  IonItem,
+  IonListHeader,
+  IonLabel
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { pencilOutline, trashOutline, chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
@@ -29,7 +33,6 @@ export interface TableColumn {
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
-  styleUrls: ['./table.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
@@ -44,7 +47,11 @@ export interface TableColumn {
     IonSelect,
     IonSelectOption,
     IonSpinner,
-    IonCard
+    IonCard,
+    IonList,
+    IonItem,
+    IonListHeader,
+    IonLabel
   ]
 })
 export class TableComponent {

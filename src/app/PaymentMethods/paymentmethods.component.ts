@@ -86,8 +86,8 @@ export class PaymentMethodsComponent implements OnInit {
     this.paymentMethodColumns = [
       { key: 'Id', label: 'Id', size: '12', sizeMd: '1' },
       { key: 'MethodName', label: 'Nombre del Método', size: '12', sizeMd: '7' },
-      { key: 'IsActive', label: 'Estado', size: '6', sizeMd: '2', type: 'badge', cssClass: 'ion-text-center' },
-      { key: 'actions', label: 'Acciones', size: '6', sizeMd: '2', type: 'actions', cssClass: 'ion-text-center' },
+      { key: 'IsActive', label: 'Estado', size: '6', sizeMd: '2', type: 'badge', cssClass: 'ion-text-start' },
+      { key: 'actions', label: 'Acciones', size: '6', sizeMd: '2', type: 'actions', cssClass: 'ion-text-end' },
     ];
     this.LoadData();
   }

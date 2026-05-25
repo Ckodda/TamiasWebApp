@@ -16,7 +16,6 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-create-event',
   templateUrl: './create.component.html',
-  styleUrls: ['./create.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
