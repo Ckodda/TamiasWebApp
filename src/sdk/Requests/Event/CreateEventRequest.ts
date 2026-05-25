@@ -1,9 +1,9 @@
 export interface CreateEventRequest
 {
-     CostCenterId: number;
-     CurrencyId: number;
+     CostCenterId?: number;
+     CurrencyId?: number;
      EventName: string;
      TargetAmount: number;
-     EventStatus: string;
+     EventStatus: 'Active' | 'Completed' | 'Cancelled' | '';
      StartDate: string;
 }

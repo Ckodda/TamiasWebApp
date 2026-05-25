@@ -2,13 +2,21 @@
   <ion-toolbar>
     <ion-title>Editar Evento</ion-title>
     <ion-buttons slot="start">
+      <ion-back-button defaultHref="/events"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
       <ion-button (click)="cancel()">Cancelar</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <form [formGroup]="form" (ngSubmit)="submit()">
+  <div *ngIf="isDataLoading()" class="ion-text-center ion-padding">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando datos del evento...</p>
+  </div>
+
+  <form *ngIf="!isDataLoading() && form" [formGroup]="form" (ngSubmit)="submit()">
     <ion-input
       mode="md"
       fill="outline"
@@ -18,6 +26,7 @@
       placeholder="Ej: Lanzamiento de producto"
       [errorText]="getErrorMessage('EventName')"
       class="ion-margin-bottom"
+      required
     ></ion-input>
 
     <ion-input
@@ -30,6 +39,7 @@
       placeholder="0.00"
       [errorText]="getErrorMessage('TargetAmount')"
       class="ion-margin-bottom"
+      required
     ></ion-input>
 
     <ion-input
@@ -41,32 +51,73 @@
       formControlName="StartDate"
       [errorText]="getErrorMessage('StartDate')"
       class="ion-margin-bottom"
+      required
     ></ion-input>
 
     <ion-select
       mode="md"
       fill="outline"
-      label="Centro de Costo"
+      label="Centro de Costo *"
       labelPlacement="stacked"
       formControlName="CostCenterId"
-      interface="popover"
+      placeholder="Seleccione..."
       [errorText]="getErrorMessage('CostCenterId')"
+      required
+      interface="popover"
       class="ion-margin-bottom"
     >
-      <!-- Nota: Se deben cargar las opciones desde el componente -->
+      <ion-select-option [value]="null">Seleccione...</ion-select-option>
+      <ion-select-option *ngIf="selectedCostCenter() as sel" [value]="sel.Id">
+        {{ costCenterLabelFn(sel) }}
+      </ion-select-option>
+      <ng-container *ngFor="let item of costCenters()">
+      <ion-select-option *ngIf="item.Id !== selectedCostCenter()?.Id" [value]="item.Id">
+        {{ costCenterLabelFn(item) }}
+      </ion-select-option>
+      </ng-container>
+      <app-searchable-select
+        slot="end"
+        placeholder="Buscar Centro de Costo..."
+        [items]="costCenters()"
+        [loading]="isSearchingCostCenters()"
+        [itemLabelFn]="costCenterLabelFn"
+        [itemNoteFn]="costCenterNoteFn"
+        (searchChange)="onCostCenterSearchChange($event)"
+        (itemSelected)="onCostCenterSelected($event)"
+      ></app-searchable-select>
     </ion-select>
 
     <ion-select
       mode="md"
       fill="outline"
-      label="Moneda"
+      label="Moneda *"
       labelPlacement="stacked"
       formControlName="CurrencyId"
-      interface="popover"
+      placeholder="Seleccione..."
       [errorText]="getErrorMessage('CurrencyId')"
+      required
+      interface="popover"
       class="ion-margin-bottom"
     >
-      <!-- Nota: Se deben cargar las opciones desde el componente -->
+      <ion-select-option [value]="null">Seleccione...</ion-select-option>
+      <ion-select-option *ngIf="selectedCurrency() as sel" [value]="sel.Id">
+        {{ currencyLabelFn(sel) }}
+      </ion-select-option>
+      <ng-container *ngFor="let item of currencies()">
+      <ion-select-option *ngIf="item.Id !== selectedCurrency()?.Id" [value]="item.Id">
+        {{ currencyLabelFn(item) }}
+      </ion-select-option>
+      </ng-container>
+      <app-searchable-select
+        slot="end"
+        placeholder="Buscar Moneda..."
+        [items]="currencies()"
+        [loading]="isSearchingCurrencies()"
+        [itemLabelFn]="currencyLabelFn"
+        [itemNoteFn]="currencyNoteFn"
+        (searchChange)="onCurrencySearchChange($event)"
+        (itemSelected)="onCurrencySelected($event)"
+      ></app-searchable-select>
     </ion-select>
 
     <ion-select
@@ -78,7 +129,9 @@
       interface="popover"
       [errorText]="getErrorMessage('IsActive')"
       class="ion-margin-bottom"
+      required
     >
+      <ion-select-option [value]="null">Seleccione...</ion-select-option>
       <ion-select-option [value]="true">Activo</ion-select-option>
       <ion-select-option [value]="false">Inactivo</ion-select-option>
     </ion-select>

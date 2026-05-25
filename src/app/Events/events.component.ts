@@ -1,8 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import {
   IonGrid,
   IonRow,
@@ -13,7 +11,6 @@ import {
   IonSelectOption,
   IonButton,
   IonIcon,
-  IonBadge,
   IonText,
   IonCard,
   IonCardHeader,
@@ -21,14 +18,9 @@ import {
   IonCardContent,
   IonSpinner,
   ModalController,
-  IonPopover,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonChip,
-  IonNote,
 } from '@ionic/angular/standalone';
 import { ToastService } from '../components/toast/toast.service';
+import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { searchOutline, refreshOutline, filterOutline, addOutline, closeCircle } from 'ionicons/icons';
 import { TableComponent, TableColumn } from '../components/table/table.component';
@@ -39,6 +31,7 @@ import { CreateComponent } from './CreateEvent/create.component';
 import { UpdateComponent } from './UpdateEvent/update.component';
 import { CurrencyResponse } from 'src/sdk/Responses/Currency/CurrencyResponse';
 import { GetCurrenciesAction } from 'src/sdk/Actions/Currency/GetCurrenciesAction';
+import { SearchableSelectComponent } from '../components/searchable/searchable-select.component';
 
 @Component({
   selector: 'app-events',
@@ -57,7 +50,6 @@ import { GetCurrenciesAction } from 'src/sdk/Actions/Currency/GetCurrenciesActio
     IonSelectOption,
     IonButton,
     IonIcon,
-    IonBadge,
     IonText,
     IonCard,
     IonCardHeader,
@@ -65,12 +57,7 @@ import { GetCurrenciesAction } from 'src/sdk/Actions/Currency/GetCurrenciesActio
     IonCardContent,
     IonSpinner,
     TableComponent,
-    IonPopover,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonChip,
-    IonNote,
+    SearchableSelectComponent,
   ],
 })
 export class EventsComponent implements OnInit {
@@ -82,14 +69,10 @@ export class EventsComponent implements OnInit {
   public currencies = signal<CurrencyResponse[]>([]);
   public selectedCurrency = signal<CurrencyResponse | null>(null);
   public isSearchingCurrencies = signal<boolean>(false);
-  public showCurrencyDropdown = signal<boolean>(false);
-  // La propiedad para el término de búsqueda de la moneda
-  public currencySearchTerm = signal<string>('');
-  private currencySearch$ = new Subject<string>();
   public filters: GetEventsRequest = {
      Id: undefined,
      EventName: '',
-     CurrencyId: undefined,
+     CurrencyId: null as any,
      StartDate: undefined,
      IsActive: null,
      PageNumber: 1,
@@ -100,13 +83,13 @@ export class EventsComponent implements OnInit {
     private getEventsAction: GetEventsAction,
     private getCurrenciesAction: GetCurrenciesAction,
     private modalController: ModalController,
+    private router: Router,
     private toastService: ToastService
   ) {
     addIcons({ searchOutline, refreshOutline, filterOutline, addOutline, closeCircle });
   }
 
   ngOnInit() {
-    this.setupCurrencySearch();
     this.eventColumns = [
       { key: 'Id', label: 'Id', size: '12', sizeMd: '1' },
       { key: 'EventName', label: 'Nombre', size: '12', sizeMd: '3' },
@@ -116,33 +99,30 @@ export class EventsComponent implements OnInit {
       { key: 'IsActive', label: 'Activo', size: '6', sizeMd: '1', type: 'badge', cssClass: 'ion-text-center' },
       { key: 'actions', label: 'Acciones', size: '6', sizeMd: '2', type: 'actions', cssClass: 'ion-text-center' },
     ];
+  }
+
+  ionViewWillEnter() {
     this.LoadData();
   }
 
-  private setupCurrencySearch() {
-    this.currencySearch$.pipe(
-      debounceTime(400),
-      distinctUntilChanged()
-    ).subscribe(term => {
-      if (term.length >= 3) {
-        this.isSearchingCurrencies.set(true);
-        // Buscamos monedas por el término ingresado
-        this.getCurrenciesAction.Execute({ CurrencyCode: term }).subscribe({
-          next: (response) => {
-            if (response.Code === 200 && response.Content) {
-              this.currencies.set(response.Content.Items);
-            }
-            this.isSearchingCurrencies.set(false);
-          },
-          error: () => {
-            this.isSearchingCurrencies.set(false);
-            this.currencies.set([]);
-          }
-        });
-      } else {
-        this.currencies.set([]);
+  onCurrencySearchChange(term: string) {
+    if (term.length < 3) {
+      this.currencies.set([]);
+      this.isSearchingCurrencies.set(false);
+      return;
+    }
+
+    this.isSearchingCurrencies.set(true);
+    this.getCurrenciesAction.Execute({ CurrencyCode: term }).subscribe({
+      next: (response) => {
+        if (response.Code === 200 && response.Content) {
+          this.currencies.set(response.Content.Items);
+        }
         this.isSearchingCurrencies.set(false);
-        this.showCurrencyDropdown.set(false);
+      },
+      error: () => {
+        this.isSearchingCurrencies.set(false);
+        this.currencies.set([]);
       }
     });
   }
@@ -169,60 +149,33 @@ export class EventsComponent implements OnInit {
     });
   }
 
-  // Maneja la entrada del usuario en el campo de búsqueda de moneda
-  onCurrencyInput(event: any) {
-    const val = event.target.value;
-    this.currencySearchTerm.set(val);
-    
-    if (val.length >= 3) {
-      this.showCurrencyDropdown.set(true); // Mostrar dropdown si hay al menos 3 caracteres
-    } else {
-      this.showCurrencyDropdown.set(false); // Ocultar dropdown si hay menos de 3 caracteres
-      this.currencies.set([]); // Limpiar resultados
-    }
-
-    this.currencySearch$.next(val);
-    
-    // Si se limpia el texto, eliminamos el filtro de ID
-    if (!val) {
-      this.filters.CurrencyId = undefined;
-      this.isSearchingCurrencies.set(false);
-      this.showCurrencyDropdown.set(false); // Asegurarse de ocultar el dropdown
-    }
-  }
-
   // Selecciona una moneda de la lista desplegable
   selectCurrency(currency: CurrencyResponse) {
-    this.filters.CurrencyId = currency.Id;
+    this.filters.CurrencyId = currency.Id as any;
     this.selectedCurrency.set(currency);
-    this.currencySearchTerm.set('');
     this.currencies.set([]); // Cerramos la lista al seleccionar
     this.isSearchingCurrencies.set(false);
-    this.showCurrencyDropdown.set(false); // Ocultar dropdown al seleccionar
   }
 
   // Limpia la selección y vuelve al modo búsqueda
   clearCurrencySelection() {
-    this.filters.CurrencyId = undefined;
+    this.filters.CurrencyId = null as any;
     this.selectedCurrency.set(null);
-    this.currencySearchTerm.set('');
   }
 
   ResetFilters() {
     this.filters = {
      Id: undefined,
      EventName: '',
-     CurrencyId: undefined,
+     CurrencyId: null as any,
      StartDate: undefined,
      IsActive: null,
      PageNumber: 1,
      PageSize: 10,
     };
-    this.currencySearchTerm.set('');
     this.selectedCurrency.set(null);
     this.currencies.set([]);
     this.isSearchingCurrencies.set(false);
-    this.showCurrencyDropdown.set(false);
     this.LoadData();
   }
 
@@ -245,32 +198,14 @@ export class EventsComponent implements OnInit {
     // Implementar lógica de eliminación futura
   }
 
-  async openCreateModal() {
-    const modal = await this.modalController.create({
-      component: CreateComponent,
-      breakpoints: [0, 0.5, 0.8],
-      initialBreakpoint: 0.8
-    });
-    await modal.present();
-    const { role } = await modal.onWillDismiss();
-    if (role === 'created') {
-      this.toastService.showSuccess('Se registró correctamente');
-      this.LoadData();
-    }
+  navigateToCreate() {
+    this.router.navigate(['/events/create']);
   }
 
   async openUpdateModal(event: EventResponse) {
-    const modal = await this.modalController.create({
-      component: UpdateComponent,
-      componentProps: { event },
-      breakpoints: [0, 0.5, 0.8],
-      initialBreakpoint: 0.8
-    });
-    await modal.present();
-    const { role } = await modal.onWillDismiss();
-    if (role === 'updated') {
-      this.toastService.showSuccess('Se actualizó correctamente');
-      this.LoadData();
-    }
+    this.router.navigate(['/events/edit', event.Id]);
   }
+
+  currencyLabelFn = (item: CurrencyResponse) => item.CurrencyCode;
+  currencyNoteFn = (item: CurrencyResponse) => item.CurrencyName;
 }

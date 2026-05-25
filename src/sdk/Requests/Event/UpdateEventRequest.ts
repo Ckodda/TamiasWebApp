@@ -5,7 +5,7 @@ export interface UpdateEventRequest
      CurrencyId?: number;
      EventName?: string;
      TargetAmount?: number;
-     EventStatus?: string;
+     EventStatus?: 'Active' | 'Completed' | 'Cancelled' | null;
      StartDate?: string;
      IsActive?: boolean;
 }

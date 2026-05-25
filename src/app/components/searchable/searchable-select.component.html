@@ -1,0 +1,37 @@
+<ion-button [id]="triggerId" fill="clear" (click)="isPopoverOpen.set(true)" type="button">
+  <ion-icon slot="icon-only" name="search-outline"></ion-icon>
+</ion-button>
+
+<ion-popover 
+  [trigger]="triggerId" 
+  [isOpen]="isPopoverOpen()" 
+  (didDismiss)="isPopoverOpen.set(false)"
+  triggerAction="click"
+  side="bottom"
+  alignment="end"
+  class="search-popover">
+  <ng-template>
+    <ion-content>
+      <ion-searchbar 
+        [placeholder]="placeholder" 
+        (ionInput)="onSearch($event)"
+        mode="ios"
+        class="ion-no-padding">
+      </ion-searchbar>
+      <ion-list lines="full">
+        <ion-item *ngIf="loading" lines="none" class="ion-text-center">
+          <ion-spinner name="crescent"></ion-spinner>
+        </ion-item>
+        <ion-item button *ngFor="let item of filteredItems()" (click)="onSelect(item)">
+          <ion-label>
+            <ion-text color="dark"><h2>{{ itemLabelFn(item) }}</h2></ion-text>
+            <p *ngIf="itemNoteFn(item)">{{ itemNoteFn(item) }}</p>
+          </ion-label>
+        </ion-item>
+        <ion-item *ngIf="!loading && filteredItems().length === 0">
+          <ion-label color="medium">No se encontraron resultados</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-popover>

@@ -1,0 +1,16 @@
+.searchable-input {
+  cursor: pointer;
+  --highlight-color-focused: var(--ion-color-primary);
+  
+  &.ion-invalid {
+    --highlight-color-focused: var(--ion-color-danger);
+  }
+}
+
+.search-popover {
+  --width: 100%;
+  --max-width: 400px;
+  ion-content {
+    --background: var(--ion-item-background, #fff);
+  }
+}
