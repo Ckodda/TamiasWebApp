@@ -32,6 +32,10 @@ export const routes: Routes = [
      {
           path: 'events',
           loadChildren: () => import('./Events/events.routes').then(m => m.eventsRoutes)
+     },
+     {
+          path: 'loans',
+          loadChildren: () => import('./Loans/loans.routes').then(m => m.loansRoutes)
      }
 
       // Agregar más rutas aquí que requieran Navbar y Sidebar

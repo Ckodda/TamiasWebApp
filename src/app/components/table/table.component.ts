@@ -32,6 +32,7 @@ export interface TableColumn {
 
 @Component({
   selector: 'app-table',
+  styleUrls: ['./table.component.scss'],
   templateUrl: './table.component.html',
   standalone: true,
   imports: [

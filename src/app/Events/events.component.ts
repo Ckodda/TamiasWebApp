@@ -27,8 +27,6 @@ import { TableComponent, TableColumn } from '../components/table/table.component
 import { EventResponse } from 'src/sdk/Responses/Event/EventResponse';
 import { GetEventsAction } from 'src/sdk/Actions/Event/GetEventsAction';
 import { GetEventsRequest } from 'src/sdk/Requests/Event/GetEventsRequest';
-import { CreateComponent } from './CreateEvent/create.component';
-import { UpdateComponent } from './UpdateEvent/update.component';
 import { CurrencyResponse } from 'src/sdk/Responses/Currency/CurrencyResponse';
 import { GetCurrenciesAction } from 'src/sdk/Actions/Currency/GetCurrenciesAction';
 import { SearchableSelectComponent } from '../components/searchable/searchable-select.component';

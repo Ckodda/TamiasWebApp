@@ -1,0 +1,128 @@
+<ion-content class="ion-padding">
+  <div class="ion-margin-bottom ion-flex ion-justify-content-between ion-align-items-center ion-flex-wrap" style="gap: 10px;">
+    <ion-text color="dark">
+      <h1 class="ion-no-margin" style="font-weight: bold;">Préstamos</h1>
+    </ion-text>
+    <ion-button color="success" (click)="navigateToCreate()">
+      <ion-icon slot="start" name="add-outline"></ion-icon>
+      Nuevo Préstamo
+    </ion-button>
+  </div>
+
+  <!-- Sección de Filtros -->
+  <ion-card class="ion-no-margin ion-margin-bottom" style="overflow: visible;">
+    <ion-card-header>
+      <ion-card-title class="ion-flex ion-align-items-center" style="font-size: 1.1rem; font-weight: 600;">
+        <ion-icon name="filter-outline" slot="start" class="ion-margin-end"></ion-icon>
+        Filtros de búsqueda
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content style="overflow: visible;">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12" size-md="1">
+            <ion-input
+              mode="md"
+              fill="outline"
+              label="ID"
+              labelPlacement="stacked"
+              type="number"
+              [(ngModel)]="filters.Id"
+              placeholder="Ej: 1"
+              [errorText]="validationErrors()?.Id ? validationErrors().Id[0] : ''"
+              [class.ion-invalid]="validationErrors()?.Id"
+              [class.ion-touched]="validationErrors()?.Id"
+            ></ion-input>
+          </ion-col>
+
+          <ion-col size="12" size-md="3">
+            <ion-input
+              mode="md"
+              fill="outline"
+              label="Nombre del Prestamista"
+              labelPlacement="stacked"
+              [(ngModel)]="filters.LenderName"
+              placeholder="Ej: Banco, Persona..."
+              [errorText]="validationErrors()?.LenderName ? validationErrors().LenderName[0] : ''"
+              [class.ion-invalid]="validationErrors()?.LenderName"
+              [class.ion-touched]="validationErrors()?.LenderName"
+            ></ion-input>
+          </ion-col>
+
+          <ion-col size="12" size-md="2">
+            <ion-input
+              mode="md"
+              fill="outline"
+              label="Fecha de Vencimiento"
+              labelPlacement="stacked"
+              type="date"
+              [(ngModel)]="filters.RepaymentDueDate"
+              [errorText]="validationErrors()?.RepaymentDueDate ? validationErrors().RepaymentDueDate[0] : ''"
+              [class.ion-invalid]="validationErrors()?.RepaymentDueDate"
+              [class.ion-touched]="validationErrors()?.RepaymentDueDate"
+            ></ion-input>
+          </ion-col>
+          
+          <ion-col size="12" size-md="2">
+            <ion-select
+              mode="md"
+              fill="outline"
+              label="Estado del Préstamo"
+              labelPlacement="stacked"
+              [(ngModel)]="filters.LoanStatus"
+              interface="popover"
+              [errorText]="validationErrors()?.LoanStatus ? validationErrors().LoanStatus[0] : ''"
+              [class.ion-invalid]="validationErrors()?.LoanStatus"
+              [class.ion-touched]="validationErrors()?.LoanStatus"
+            >
+              <ion-select-option [value]="null">Todos</ion-select-option>
+              <ion-select-option value="Pending">Pendiente</ion-select-option>
+              <ion-select-option value="Paid">Pagado</ion-select-option>
+            </ion-select>
+          </ion-col>
+
+          <ion-col size="12" size-md="2">
+            <ion-select
+              mode="md"
+              fill="outline"
+              label="Activo"
+              labelPlacement="stacked"
+              [(ngModel)]="filters.IsActive"
+              interface="popover"
+              [errorText]="validationErrors()?.IsActive ? validationErrors().IsActive[0] : ''"
+              [class.ion-invalid]="validationErrors()?.IsActive"
+              [class.ion-touched]="validationErrors()?.IsActive"
+            >
+              <ion-select-option [value]="null">Todos</ion-select-option>
+              <ion-select-option [value]="true">Activo</ion-select-option>
+              <ion-select-option [value]="false">Inactivo</ion-select-option>
+            </ion-select>
+          </ion-col>
+
+          <ion-col size="12" size-md="2" class="ion-align-self-center">
+              <ion-button expand="block" (click)="LoadData()" [disabled]="isLoading()">
+                <ion-icon slot="start" name="search-outline" *ngIf="!isLoading()"></ion-icon>
+                <ion-spinner slot="start" name="crescent" size="small" *ngIf="isLoading()"></ion-spinner>
+                {{ isLoading() ? 'Buscando...' : 'Buscar' }}
+              </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Reutilización del componente de tabla genérico -->
+     <app-table
+     [items]="loans()"
+     [columns]="loanColumns"
+     [isLoading]="isLoading()"
+     [totalCount]="totalCount()"
+     [pageNumber]="filters.Page!"
+     [pageSize]="filters.PageSize!"
+     [totalLabel]="'préstamos'"
+     (edit)="onTableEdit($event)"
+     (delete)="onTableDelete($event)"
+     (pageChange)="onTablePageChange($event)"
+     (pageSizeChange)="onTablePageSizeChange($event)"
+     ></app-table>
+</ion-content>
