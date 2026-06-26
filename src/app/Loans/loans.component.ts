@@ -108,7 +108,7 @@ export class LoansComponent implements OnInit {
           this.validationErrors.set(null);
           this.getLoansAction.Execute(this.filters).subscribe({
                next: (res) => {
-                    if (res.Code === 201 && res.Content?.Items) {
+                    if (res.Code === 200 && res.Content?.Items) {
                          this.loans.set(res.Content.Items);
                          this.totalCount.set(res.Content.TotalCount);
                     }

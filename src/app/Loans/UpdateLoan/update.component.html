@@ -1,0 +1,142 @@
+<ion-header mode="ios">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/loans"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Editar Préstamo</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="submit()" [disabled]="isLoading() || isDataLoading()">
+        <ion-spinner *ngIf="isLoading()" name="crescent"></ion-spinner>
+        <span *ngIf="!isLoading()">Guardar</span>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="isDataLoading()" class="ion-text-center ion-padding-top">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando datos del préstamo...</p>
+  </div>
+
+  <form *ngIf="form && !isDataLoading()" [formGroup]="form" (ngSubmit)="submit()">
+    <ion-input
+      mode="md"
+      fill="outline"
+      label="Nombre del Prestamista"
+      labelPlacement="stacked"
+      formControlName="LenderName"
+      placeholder="Ej: Banco, Persona..."
+      [errorText]="getErrorMessage('LenderName')"
+      class="ion-margin-bottom"
+      required
+    ></ion-input>
+
+    <ion-input
+      mode="md"
+      fill="outline"
+      label="Fecha de Vencimiento"
+      labelPlacement="stacked"
+      type="date"
+      formControlName="RepaymentDueDate"
+      [errorText]="getErrorMessage('RepaymentDueDate')"
+      class="ion-margin-bottom"
+      required
+    ></ion-input>
+
+    <ion-select
+      mode="md"
+      fill="outline"
+      label="Moneda *"
+      labelPlacement="stacked"
+      formControlName="CurrencyId"
+      placeholder="Seleccione..."
+      [errorText]="getErrorMessage('CurrencyId')"
+      required
+      interface="popover"
+      class="ion-margin-bottom"
+    >
+      <ion-select-option [value]="null">Seleccione...</ion-select-option>
+      <ion-select-option *ngIf="selectedCurrency() as sel" [value]="sel.Id">
+        {{ currencyLabelFn(sel) }}
+      </ion-select-option>
+      <ng-container *ngFor="let item of currencies()">
+        <ion-select-option *ngIf="item.Id !== selectedCurrency()?.Id" [value]="item.Id">
+          {{ currencyLabelFn(item) }}
+        </ion-select-option>
+      </ng-container>
+      <app-searchable-select
+        slot="end"
+        placeholder="Buscar Moneda..."
+        [items]="currencies()"
+        [loading]="isSearchingCurrencies()"
+        [itemLabelFn]="currencyLabelFn"
+        (searchChange)="onCurrencySearchChange($event)"
+        (itemSelected)="onCurrencySelected($event)"
+      ></app-searchable-select>
+    </ion-select>
+
+    <ion-select
+      mode="md"
+      fill="outline"
+      label="Estado del Préstamo"
+      labelPlacement="stacked"
+      formControlName="LoanStatus"
+      [errorText]="getErrorMessage('LoanStatus')"
+      interface="popover"
+      class="ion-margin-bottom"
+      required
+    >
+      <ion-select-option value="Pending">Pendiente</ion-select-option>
+      <ion-select-option value="Paid">Pagado</ion-select-option>
+    </ion-select>
+
+    <ion-input
+      mode="md"
+      fill="outline"
+      label="Monto Principal"
+      labelPlacement="stacked"
+      type="number"
+      formControlName="PrincipalAmount"
+      placeholder="0.00"
+      [errorText]="getErrorMessage('PrincipalAmount')"
+      class="ion-margin-bottom"
+      required
+    ></ion-input>
+
+    <ion-input
+      mode="md"
+      fill="outline"
+      label="Monto de Interés"
+      labelPlacement="stacked"
+      type="number"
+      formControlName="InterestAmount"
+      placeholder="0.00"
+      [errorText]="getErrorMessage('InterestAmount')"
+      class="ion-margin-bottom"
+      required
+    ></ion-input>
+
+    <ion-input
+      mode="md"
+      fill="outline"
+      label="Total a Pagar"
+      labelPlacement="stacked"
+      type="number"
+      formControlName="TotalToRepay"
+      class="ion-margin-bottom"
+      readonly
+    ></ion-input>
+
+    <ion-text color="danger" *ngIf="validationErrors()?.general">
+      <small>{{ validationErrors().general[0] }}</small>
+    </ion-text>
+
+    <div class="ion-padding-top">
+      <ion-button expand="block" type="submit" [disabled]="isLoading() || isDataLoading()">
+        <ion-spinner slot="start" name="crescent" size="small" *ngIf="isLoading()"></ion-spinner>
+        {{ isLoading() ? 'Guardando...' : 'Actualizar Préstamo' }}
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

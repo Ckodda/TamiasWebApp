@@ -36,6 +36,10 @@ export const routes: Routes = [
      {
           path: 'loans',
           loadChildren: () => import('./Loans/loans.routes').then(m => m.loansRoutes)
+     },
+     {
+          path: 'pending-expenses',
+          loadChildren: () => import('./PendingExpenses/pendingexpenses.routes').then(m => m.pendingExpensesRoutes)
      }
 
       // Agregar más rutas aquí que requieran Navbar y Sidebar
