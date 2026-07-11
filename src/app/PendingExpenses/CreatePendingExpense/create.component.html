@@ -1,0 +1,154 @@
+<ion-header mode="ios">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/pending-expenses"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Nuevo Gasto Pendiente</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">Cancelar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form *ngIf="form" [formGroup]="form" (ngSubmit)="createPendingExpense()">
+    <ion-input
+      mode="md"
+      fill="outline"
+      label="Descripción del Gasto"
+      labelPlacement="stacked"
+      formControlName="ExpenseDescription"
+      placeholder="Ej: Material de oficina, Alquiler..."
+      [errorText]="getErrorMessage('ExpenseDescription')"
+      class="ion-margin-bottom"
+      required
+    ></ion-input>
+
+    <ion-input
+      mode="md"
+      fill="outline"
+      label="Monto Total"
+      labelPlacement="stacked"
+      type="number"
+      formControlName="TotalAmount"
+      placeholder="0.00"
+      [errorText]="getErrorMessage('TotalAmount')"
+      class="ion-margin-bottom"
+      required
+    ></ion-input>
+
+    <ion-input
+      mode="md"
+      fill="outline"
+      label="Fecha de Vencimiento"
+      labelPlacement="stacked"
+      type="date"
+      formControlName="DueDate"
+      [errorText]="getErrorMessage('DueDate')"
+      class="ion-margin-bottom"
+      required
+    ></ion-input>
+
+    <ion-input
+      mode="md"
+      fill="outline"
+      label="Nombre del Proveedor"
+      labelPlacement="stacked"
+      formControlName="ProviderName"
+      placeholder="Ej: Empresa X, Persona Y..."
+      [errorText]="getErrorMessage('ProviderName')"
+      class="ion-margin-bottom"
+      required
+    ></ion-input>
+
+    <ion-select
+      mode="md"
+      fill="outline"
+      label="Centro de Costo *"
+      labelPlacement="stacked"
+      formControlName="CostCenterId"
+      placeholder="Seleccione..."
+      [errorText]="getErrorMessage('CostCenterId')"
+      required
+      interface="popover"
+      class="ion-margin-bottom"
+    >
+      <ion-select-option [value]="null">Seleccione...</ion-select-option>
+      <ion-select-option *ngIf="selectedCostCenter() as sel" [value]="sel.Id">
+        {{ costCenterLabelFn(sel) }}
+      </ion-select-option>
+      <ng-container *ngFor="let item of costCenters()">
+        <ion-select-option *ngIf="item.Id !== selectedCostCenter()?.Id" [value]="item.Id">
+          {{ costCenterLabelFn(item) }}
+        </ion-select-option>
+      </ng-container>
+      <app-searchable-select
+        slot="end"
+        placeholder="Buscar Centro de Costo..."
+        [items]="costCenters()"
+        [loading]="isSearchingCostCenters()"
+        [itemLabelFn]="costCenterLabelFn"
+        (searchChange)="onCostCenterSearchChange($event)"
+        (itemSelected)="onCostCenterSelected($event)"
+      ></app-searchable-select>
+    </ion-select>
+
+    <ion-select
+      mode="md"
+      fill="outline"
+      label="Moneda *"
+      labelPlacement="stacked"
+      formControlName="CurrencyId"
+      placeholder="Seleccione..."
+      [errorText]="getErrorMessage('CurrencyId')"
+      required
+      interface="popover"
+      class="ion-margin-bottom"
+    >
+      <ion-select-option [value]="null">Seleccione...</ion-select-option>
+      <ion-select-option *ngIf="selectedCurrency() as sel" [value]="sel.Id">
+        {{ currencyLabelFn(sel) }}
+      </ion-select-option>
+      <ng-container *ngFor="let item of currencies()">
+        <ion-select-option *ngIf="item.Id !== selectedCurrency()?.Id" [value]="item.Id">
+          {{ currencyLabelFn(item) }}
+        </ion-select-option>
+      </ng-container>
+      <app-searchable-select
+        slot="end"
+        placeholder="Buscar Moneda..."
+        [items]="currencies()"
+        [loading]="isSearchingCurrencies()"
+        [itemLabelFn]="currencyLabelFn"
+        (searchChange)="onCurrencySearchChange($event)"
+        (itemSelected)="onCurrencySelected($event)"
+      ></app-searchable-select>
+    </ion-select>
+
+    <ion-select
+      mode="md"
+      fill="outline"
+      label="Estado de Pago"
+      labelPlacement="stacked"
+      formControlName="PaymentStatus"
+      [errorText]="getErrorMessage('PaymentStatus')"
+      interface="popover"
+      class="ion-margin-bottom"
+      required
+    >
+      <ion-select-option value="Pending">Pendiente</ion-select-option>
+      <ion-select-option value="Paid">Pagado</ion-select-option>
+    </ion-select>
+
+    <ion-text color="danger" *ngIf="validationErrors()?.general">
+      <small>{{ validationErrors().general[0] }}</small>
+    </ion-text>
+
+    <div class="ion-padding-top">
+      <ion-button expand="block" type="submit" [disabled]="isLoading()">
+        <ion-spinner slot="start" name="crescent" size="small" *ngIf="isLoading()"></ion-spinner>
+        {{ isLoading() ? 'Guardando...' : 'Guardar Gasto Pendiente' }}
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

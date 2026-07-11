@@ -19,15 +19,16 @@ import {
   IonBackButton,
   IonItem
 } from '@ionic/angular/standalone';
-import { ToastService } from 'src/app/components/toast/toast.service';
-import { LoanResponse } from 'src/sdk/Responses/Loan/LoanResponse';
-import { UpdateLoanAction } from 'src/sdk/Actions/Loan/UpdateLoanAction';
-import { UpdateLoanRequest } from 'src/sdk/Requests/Loan/UpdateLoanRequest';
-import { CurrencyResponse } from 'src/sdk/Responses/Currency/CurrencyResponse';
-import { GetCurrenciesAction } from 'src/sdk/Actions/Currency/GetCurrenciesAction';
-import { SearchableSelectComponent } from 'src/app/components/searchable/searchable-select.component';
-import { ActivatedRoute, Router } from '@angular/router';
-import { GetLoansAction } from 'src/sdk/Actions/Loan/GetLoansAction';
+
+import { Router, ActivatedRoute } from '@angular/router';
+import { SearchableSelectComponent } from '../../components/searchable/searchable-select.component';
+import { ToastService } from '../../components/toast/toast.service';
+import { CurrencyResponse } from '../../../sdk/Responses/Currency/CurrencyResponse';
+import { UpdateLoanAction } from '../../../sdk/Actions/Loan/UpdateLoanAction';
+import { GetLoansAction } from '../../../sdk/Actions/Loan/GetLoansAction';
+import { GetCurrenciesAction } from '../../../sdk/Actions/Currency/GetCurrenciesAction';
+import { LoanResponse } from '../../../sdk/Responses/Loan/LoanResponse';
+import { UpdateLoanRequest } from '../../../sdk/Requests/Loan/UpdateLoanRequest';
 
 @Component({
   selector: 'app-update-loan',

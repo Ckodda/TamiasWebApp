@@ -25,11 +25,13 @@ import {
 } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { addOutline, refreshOutline, searchOutline } from "ionicons/icons";
-import { GetLoansAction } from "src/sdk/Actions/Loan/GetLoansAction";
-import { GetLoansRequest } from "src/sdk/Requests/Loan/GetLoansRequest";
-import { LoanResponse } from "src/sdk/Responses/Loan/LoanResponse";
-import { TableColumn, TableComponent } from "src/app/components/table/table.component";
-import { ToastService } from "src/app/components/toast/toast.service";
+
+import { TableComponent, TableColumn } from "../components/table/table.component";
+import { GetLoansRequest } from "../../sdk/Requests/Loan/GetLoansRequest";
+import { GetLoansAction } from "../../sdk/Actions/Loan/GetLoansAction";
+import { LoanResponse } from "../../sdk/Responses/Loan/LoanResponse";
+import { ToastService } from "../components/toast/toast.service";
+
 import { FormsModule } from "@angular/forms";
 
 

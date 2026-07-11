@@ -24,11 +24,11 @@ import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { searchOutline, refreshOutline, filterOutline, addOutline, closeCircle } from 'ionicons/icons';
 import { TableComponent, TableColumn } from '../components/table/table.component';
-import { EventResponse } from 'src/sdk/Responses/Event/EventResponse';
-import { GetEventsAction } from 'src/sdk/Actions/Event/GetEventsAction';
-import { GetEventsRequest } from 'src/sdk/Requests/Event/GetEventsRequest';
-import { CurrencyResponse } from 'src/sdk/Responses/Currency/CurrencyResponse';
-import { GetCurrenciesAction } from 'src/sdk/Actions/Currency/GetCurrenciesAction';
+import { GetEventsRequest } from '../../sdk/Requests/Event/GetEventsRequest';
+import { GetEventsAction } from '../../sdk/Actions/Event/GetEventsAction';
+import { EventResponse } from '../../sdk/Responses/Event/EventResponse';
+import { GetCurrenciesAction } from '../../sdk/Actions/Currency/GetCurrenciesAction';
+import { CurrencyResponse } from '../../sdk/Responses/Currency/CurrencyResponse';
 import { SearchableSelectComponent } from '../components/searchable/searchable-select.component';
 
 @Component({

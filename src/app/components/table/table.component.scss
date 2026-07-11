@@ -1,16 +1,37 @@
-ion-list-header {
-  border-bottom: 1px solid var(--ion-color-medium-tint);
-  padding-left: 16px;
-  padding-right: 16px;
-
-  ion-col {
-    b {
-      font-weight: 600; // Slightly bolder
-    }
-  }
+.table-responsive {
+  overflow-x: auto; /* Enable horizontal scrolling */
+  width: 100%;
 }
 
-ion-item ion-col {
-    padding-top: 4px;
-    padding-bottom: 4px;
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: max-content; /* Allow table to grow beyond container if content is wide */
 }
+
+.data-table th,
+.data-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--ion-color-step-150, #d7d8da);
+  text-align: left;
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+.data-table th {
+  background-color: var(--ion-color-step-50, #f2f2f2);
+  position: sticky; /* Make header sticky for horizontal scroll */
+  top: 0;
+  z-index: 1;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Specific styling for actions column to ensure it aligns right */
+.data-table td.actions-column,
+.data-table th.actions-column {
+  text-align: right;
+  min-width: 100px; /* Ensure enough space for buttons */
+}
+

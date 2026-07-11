@@ -23,13 +23,13 @@ import {
 import { ToastService } from '../components/toast/toast.service';
 import { addIcons } from 'ionicons';
 import { searchOutline, refreshOutline, filterOutline, addOutline } from 'ionicons/icons';
-import { GetPaymentMethodsAction } from 'src/sdk/Actions/PaymentMethod/GetPaymentMethodsAction';
-import { GetPaymentMethodsRequest } from 'src/sdk/Requests/PaymentMethod/GetPaymentMethodsRequest';
-import { PaymentMethodResponse } from 'src/sdk/Responses/PaymentMethod/PaymentMethodResponse';
+
 import { TableComponent, TableColumn } from '../components/table/table.component';
 import { UpdateComponent } from './UpdatePaymentMethod/update.component';
 import { CreateComponent } from './CreatePaymentMethod/create.component';
-
+import { PaymentMethodResponse } from '../../sdk/Responses/PaymentMethod/PaymentMethodResponse';
+import { GetPaymentMethodsRequest } from '../../sdk/Requests/PaymentMethod/GetPaymentMethodsRequest';
+import { GetPaymentMethodsAction } from '../../sdk/Actions/PaymentMethod/GetPaymentMethodsAction';
 @Component({
   selector: 'app-payment-methods',
   templateUrl: './paymentmethods.component.html',

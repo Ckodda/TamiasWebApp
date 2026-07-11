@@ -2,6 +2,7 @@ export interface UpdatePendingExpenseRequest
 {
      Id: number;
      CostCenterId?: number;
+     CurrencyId?: number;
      ExpenseDescription?: string;
      TotalAmount?: number;
      DueDate?: string;

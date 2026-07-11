@@ -14,4 +14,6 @@ export const TAMIAS_AUTH_ENDPOINTS = {
      events: `${TAMIAS_API_BASE_URL}/events`,
      loans: `${TAMIAS_API_BASE_URL}/loans`,
      pendingExpenses: `${TAMIAS_API_BASE_URL}/pending-expenses`,
+     commitments: `${TAMIAS_API_BASE_URL}/commitments`,
+     transactions: `${TAMIAS_API_BASE_URL}/transactions`,
 };

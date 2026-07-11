@@ -13,9 +13,10 @@ import {
   ModalController,
   IonSpinner
 } from '@ionic/angular/standalone';
-import { ToastService } from 'src/app/components/toast/toast.service';
-import { CreatePaymentMethodAction } from 'src/sdk/Actions/PaymentMethod/CreatePaymentMethodAction';
-import { CreatePaymentMethodRequest } from 'src/sdk/Requests/PaymentMethod/CreatePaymentMethodRequest';
+
+import { ToastService } from '../../components/toast/toast.service';
+import { CreatePaymentMethodAction } from '../../../sdk/Actions/PaymentMethod/CreatePaymentMethodAction';
+import { CreatePaymentMethodRequest } from '../../../sdk/Requests/PaymentMethod/CreatePaymentMethodRequest';
 
 @Component({
   selector: 'app-create-payment-method',

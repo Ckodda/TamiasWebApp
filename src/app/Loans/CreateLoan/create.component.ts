@@ -5,11 +5,13 @@ import { Router } from '@angular/router';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonInput, IonButtons, IonSpinner, IonSelect, IonSelectOption, IonBackButton, IonText, IonIcon
 } from '@ionic/angular/standalone';
-import { CreateLoanAction } from 'src/sdk/Actions/Loan/CreateLoanAction';
-import { ToastService } from 'src/app/components/toast/toast.service';
-import { SearchableSelectComponent } from 'src/app/components/searchable/searchable-select.component';
-import { CurrencyResponse } from 'src/sdk/Responses/Currency/CurrencyResponse';
-import { GetCurrenciesAction } from 'src/sdk/Actions/Currency/GetCurrenciesAction';
+
+import { SearchableSelectComponent } from '../../components/searchable/searchable-select.component';
+import { ToastService } from '../../components/toast/toast.service';
+import { CurrencyResponse } from '../../../sdk/Responses/Currency/CurrencyResponse';
+import { CreateLoanAction } from '../../../sdk/Actions/Loan/CreateLoanAction';
+import { GetCurrenciesAction } from '../../../sdk/Actions/Currency/GetCurrenciesAction';
+
 import { combineLatest } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 

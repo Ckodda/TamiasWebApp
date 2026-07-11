@@ -1,69 +1,56 @@
-<ion-card class="ion-no-margin">
-  <ion-list class="ion-no-padding">
-    <!-- Cabecera: Escritorio -->
-    <ion-list-header class="ion-hide-md-down" style="--background: var(--ion-color-light); --min-height: 48px;">
-      <ion-grid class="ion-no-padding">
-        <ion-row>
-          <ion-col *ngFor="let col of columns" [sizeMd]="col.sizeMd" [class]="col.cssClass">
+<ion-card class="ion-no-margin table-container">
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th *ngFor="let col of columns" [class]="col.cssClass">
             <ion-text color="dark"><b>{{ col.label }}</b></ion-text>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </ion-list-header>
+          </th>
+        </tr>
+      </thead>
 
-    <!-- Cuerpo de Datos -->
-    <ng-container *ngIf="!isLoading; else loadingTemplate">
-      <ion-item *ngFor="let item of items" lines="full">
-        <ion-label class="ion-no-margin ion-padding-vertical">
-          <ion-grid>
-            <ion-row class="ion-align-items-center">
-              <ion-col *ngFor="let col of columns" [size]="col.size" [sizeMd]="col.sizeMd" [class]="col.cssClass">
-                
-                <!-- Etiquetas informativas para Móvil -->
-                <div class="ion-hide-md-up ion-text-start" *ngIf="col.type !== 'actions'" style="margin-bottom: 2px;">
-                  <ion-text color="primary"><small><b>{{ col.label }}</b></small></ion-text>
-                </div>
+      <tbody *ngIf="!isLoading && items.length > 0">
+        <tr *ngFor="let item of items">
+          <td *ngFor="let col of columns" [class]="col.cssClass">
+            <ng-container [ngSwitch]="col.type">
+              <!-- Caso Badge -->
+              <div *ngSwitchCase="'badge'">
+                <ion-badge [color]="item[col.key] ? 'success' : 'medium'">
+                  {{ item[col.key] ? 'Activo' : 'Inactivo' }}
+                </ion-badge>
+              </div>
 
-                <!-- Renderizado dinámico según el tipo -->
-                <ng-container [ngSwitch]="col.type">
-                  
-                  <!-- Caso Badge -->
-                  <div *ngSwitchCase="'badge'" class="ion-flex ion-justify-content-start">
-                    <ion-badge [color]="item[col.key] ? 'success' : 'medium'">
-                      {{ item[col.key] ? 'Activo' : 'Inactivo' }}
-                    </ion-badge>
-                  </div>
+              <!-- Caso Acciones -->
+              <div *ngSwitchCase="'actions'" class="ion-text-nowrap ion-flex ion-justify-content-end">
+                <ion-button fill="clear" color="primary" size="small" (click)="$event.stopPropagation(); edit.emit(item)">
+                  <ion-icon slot="icon-only" name="pencil-outline"></ion-icon>
+                </ion-button>
+                <ion-button fill="clear" color="danger" size="small" (click)="$event.stopPropagation(); delete.emit(item)">
+                  <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                </ion-button>
+              </div>
 
-                  <!-- Caso Acciones -->
-                  <div *ngSwitchCase="'actions'" class="ion-text-nowrap ion-flex ion-justify-content-end">
-                    <ion-button fill="clear" color="primary" size="small" (click)="$event.stopPropagation(); edit.emit(item)">
-                      <ion-icon slot="icon-only" name="pencil-outline"></ion-icon>
-                    </ion-button>
-                    <ion-button fill="clear" color="danger" size="small" (click)="$event.stopPropagation(); delete.emit(item)">
-                      <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-                    </ion-button>
-                  </div>
-
-                  <!-- Texto por Defecto -->
-                  <ion-text *ngSwitchDefault class="ion-text-wrap">
-                    {{ item[col.key] }}
-                  </ion-text>
-                </ng-container>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-        </ion-label>
-      </ion-item>
-    </ng-container>
-  </ion-list>
+              <!-- Texto por Defecto -->
+              <ion-text *ngSwitchDefault>
+                {{ item[col.key] }}
+              </ion-text>
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <!-- Template de Carga -->
-  <ng-template #loadingTemplate>
-    <div class="ion-text-center ion-padding">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p><ion-text color="medium"><small>Cargando datos...</small></ion-text></p>
-    </div>
-  </ng-template>
+  <div *ngIf="isLoading" class="ion-text-center ion-padding">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p><ion-text color="medium"><small>Cargando datos...</small></ion-text></p>
+  </div>
+
+  <!-- Mensaje de Lista Vacía -->
+  <div *ngIf="items.length === 0 && !isLoading" class="ion-text-center ion-padding">
+    <ion-text color="medium">No se encontraron registros.</ion-text>
+  </div>
 
   <!-- Paginación Estándar -->
   <div class="ion-padding ion-flex ion-justify-content-between ion-align-items-center ion-flex-wrap" *ngIf="totalCount > 0 && !isLoading" style="gap: 16px;">
@@ -94,10 +81,5 @@
         <ion-icon slot="icon-only" name="chevron-forward-outline"></ion-icon>
       </ion-button>
     </div>
-  </div>
-
-  <!-- Mensaje de Lista Vacía -->
-  <div *ngIf="items.length === 0 && !isLoading" class="ion-text-center ion-padding">
-    <ion-text color="medium">No se encontraron registros.</ion-text>
   </div>
 </ion-card>

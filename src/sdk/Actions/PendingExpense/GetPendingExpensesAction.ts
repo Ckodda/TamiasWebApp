@@ -11,7 +11,7 @@ import { PendingExpenseResponse } from "src/sdk/Responses/PendingExpense/Pending
 @Injectable({
      providedIn: 'root'
 })
-export class GetPendingExpenseAction 
+export class GetPendingExpensesAction 
 {
      constructor(private http: HttpClient) 
      {}

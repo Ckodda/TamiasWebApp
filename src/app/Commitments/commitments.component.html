@@ -1,11 +1,11 @@
 <ion-content class="ion-padding">
   <div class="ion-margin-bottom ion-flex ion-justify-content-between ion-align-items-center ion-flex-wrap" style="gap: 10px;">
     <ion-text color="dark">
-      <h1 class="ion-no-margin" style="font-weight: bold;">Gastos Pendientes</h1>
+      <h1 class="ion-no-margin" style="font-weight: bold;">Compromisos</h1>
     </ion-text>
     <ion-button color="success" (click)="navigateToCreate()">
       <ion-icon slot="start" name="add-outline"></ion-icon>
-      Nuevo Gasto Pendiente
+      Nuevo Compromiso
     </ion-button>
   </div>
 
@@ -95,66 +95,55 @@
             </ion-select>
           </ion-col>
 
-          <ion-col size="12" size-md="3">
-            <ion-input
-              mode="md"
-              fill="outline"
-              label="Nombre del Proveedor"
-              labelPlacement="stacked"
-              [(ngModel)]="filters.ProviderName"
-              placeholder="Ej: Juan Pérez"
-              [errorText]="validationErrors()?.ProviderName ? validationErrors().ProviderName[0] : ''"
-              [class.ion-invalid]="validationErrors()?.ProviderName"
-              [class.ion-touched]="validationErrors()?.ProviderName"
-            ></ion-input>
-          </ion-col>
-
           <ion-col size="12" size-md="2">
-            <ion-input
+            <ion-select
               mode="md"
               fill="outline"
-              label="Fecha Inicio"
+              label="Evento"
               labelPlacement="stacked"
-              type="date"
-              [(ngModel)]="filters.StartDate"
-              [errorText]="validationErrors()?.StartDate ? validationErrors().StartDate[0] : ''"
-              [class.ion-invalid]="validationErrors()?.StartDate"
-              [class.ion-touched]="validationErrors()?.StartDate"
-            ></ion-input>
-          </ion-col>
-
-          <ion-col size="12" size-md="2">
-            <ion-input
-              mode="md"
-              fill="outline"
-              label="Fecha Fin"
-              labelPlacement="stacked"
-              type="date"
-              [(ngModel)]="filters.EndDate"
-              [errorText]="validationErrors()?.EndDate ? validationErrors().EndDate[0] : ''"
-              [class.ion-invalid]="validationErrors()?.EndDate"
-              [class.ion-touched]="validationErrors()?.EndDate"
-            ></ion-input>
+              [(ngModel)]="filters.EventId"
+              placeholder="Seleccione..."
+              interface="popover"
+              [errorText]="validationErrors()?.EventId ? validationErrors().EventId[0] : ''"
+              [class.ion-invalid]="validationErrors()?.EventId"
+              [class.ion-touched]="validationErrors()?.EventId"
+            >
+              <ion-select-option [value]="null">Todos</ion-select-option>
+              <ion-select-option *ngIf="selectedEvent() as sel" [value]="sel.Id">
+                {{ eventLabelFn(sel) }}
+              </ion-select-option>
+              <app-searchable-select
+                slot="end"
+                placeholder="Buscar Evento..."
+                [items]="events()"
+                [loading]="isSearchingEvents()"
+                [itemLabelFn]="eventLabelFn"
+                [itemNoteFn]="eventNoteFn"
+                (searchChange)="onEventSearchChange($event)"
+                (itemSelected)="onEventSelected($event)"
+              ></app-searchable-select>
+            </ion-select>
           </ion-col>
 
           <ion-col size="12" size-md="2">
             <ion-select
               mode="md"
               fill="outline"
-              label="Estado del Pago"
+              label="Estado del Compromiso"
               labelPlacement="stacked"
-              [(ngModel)]="filters.PaymentStatus"
+              [(ngModel)]="filters.CurrentStatus"
               interface="popover"
-              [errorText]="validationErrors()?.PaymentStatus ? validationErrors().PaymentStatus[0] : ''"
-              [class.ion-invalid]="validationErrors()?.PaymentStatus"
-              [class.ion-touched]="validationErrors()?.PaymentStatus"
+              [errorText]="validationErrors()?.CurrentStatus ? validationErrors().CurrentStatus[0] : ''"
+              [class.ion-invalid]="validationErrors()?.CurrentStatus"
+              [class.ion-touched]="validationErrors()?.CurrentStatus"
             >
               <ion-select-option [value]="null">Todos</ion-select-option>
-              <ion-select-option value="Pending">Pendiente</ion-select-option>
-              <ion-select-option value="Paid">Pagado</ion-select-option>
+              <ion-select-option value="Active">Activo</ion-select-option>
+              <ion-select-option value="Fulfilled">Cumplido</ion-select-option>
               <ion-select-option value="Cancelled">Cancelado</ion-select-option>
             </ion-select>
           </ion-col>
+
           <ion-col size="12" size-md="2" class="ion-align-self-center">
               <ion-button expand="block" (click)="LoadData()" [disabled]="isLoading()">
                 <ion-icon slot="start" name="search-outline" *ngIf="!isLoading()"></ion-icon>
@@ -169,13 +158,13 @@
 
   <!-- Reutilización del componente de tabla genérico -->
      <app-table
-     [items]="pendingExpenses()"
-     [columns]="pendingExpensesColumns"
+     [items]="commitments()"
+     [columns]="commitmentsColumns"
      [isLoading]="isLoading()"
      [totalCount]="totalCount()"
      [pageNumber]="filters.PageNumber!"
      [pageSize]="filters.PageSize!"
-     [totalLabel]="'gastos pendientes'"
+     [totalLabel]="'compromisos'"
      (edit)="onTableEdit($event)"
      (delete)="onTableDelete($event)"
      (pageChange)="onTablePageChange($event)"

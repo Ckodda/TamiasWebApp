@@ -15,10 +15,11 @@ import {
   ModalController,
   IonSpinner
 } from '@ionic/angular/standalone';
-import { ToastService } from 'src/app/components/toast/toast.service';
-import { EventResponse } from 'src/sdk/Responses/Event/EventResponse';
-import { UpdateEventAction } from 'src/sdk/Actions/Event/UpdateEventAction';
-import { UpdateEventRequest } from 'src/sdk/Requests/Event/UpdateEventRequest';
+
+import { ToastService } from '../../components/toast/toast.service';
+import { UpdateEventAction } from '../../../sdk/Actions/Event/UpdateEventAction';
+import { EventResponse } from '../../../sdk/Responses/Event/EventResponse';
+import { UpdateEventRequest } from '../../../sdk/Requests/Event/UpdateEventRequest';
 
 @Component({
   selector: 'app-update-event',
