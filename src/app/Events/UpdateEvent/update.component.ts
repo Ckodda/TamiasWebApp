@@ -19,7 +19,22 @@ import {
   IonItem
 } from '@ionic/angular/standalone';
 
-import { Searchab}
+import { SearchableSelectComponent } from '../../../app/components/searchable/searchable-select.component';
+import { CurrencyResponse } from '../../../sdk/Responses/Currency/CurrencyResponse';
+import { CostCenterResponse } from '../../../sdk/Responses/CostCenter/CostCenterResponse';
+import { ActivatedRoute, Router } from '@angular/router';
+
+import { UpdateEventAction } from '../../../sdk/Actions/Event/UpdateEventAction';
+import { GetEventsAction } from '../../../sdk/Actions/Event/GetEventsAction';
+import { GetCurrenciesAction } from '../../../sdk/Actions/Currency/GetCurrenciesAction';
+
+import { GetCostCentersAction } from '../../../sdk/Actions/CostCenter/GetCostCentersAction';
+import { UpdateEventRequest } from '../../../sdk/Requests/Event/UpdateEventRequest';
+import { EventResponse } from '../../../sdk/Responses/Event/EventResponse';
+
+import { ToastService } from '../../components/toast/toast.service';
+
+
 
 @Component({
   selector: 'app-update-event',

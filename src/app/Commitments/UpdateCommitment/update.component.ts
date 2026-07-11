@@ -3,7 +3,7 @@ import { Component, OnInit } from "@angular/core";
 @Component({
      selector: "app-update-commitment",
      templateUrl: "./update.component.html",
-     styleUrls: ["./update.component.css"],
+     styleUrls: ["./update.component.scss"],
      standalone: true
 })
 

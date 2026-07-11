@@ -40,7 +40,7 @@ import { SearchableSelectComponent } from "../components/searchable/searchable-s
 @Component({
      selector: "app-commitments",
      templateUrl: "./commitments.component.html",
-     styleUrls: ["./commitments.component.css"],
+     styleUrls: ["./commitments.component.scss"],
      standalone: true,
      imports: [
           CommonModule,
