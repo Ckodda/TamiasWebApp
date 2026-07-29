@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthStorage } from 'src/sdk/Actions/Auth/AuthStorage';
 import { LoginRequest } from 'src/sdk/Requests/Auth/LoginRequest';
+import { jwtDecode } from 'jwt-decode';
+import { Router } from '@angular/router';
 
 import { TAMIAS_AUTH_ENDPOINTS } from 'src/sdk/api.config';
 import { LoginResponse, LogoutResponse, UserResponse } from 'src/sdk/Responses/Auth';
@@ -14,7 +16,7 @@ import { LoginResponse, LogoutResponse, UserResponse } from 'src/sdk/Responses/A
 export class AuthService {
   private CurrentUser: UserResponse | null = null;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
     this.CurrentUser = AuthStorage.GetUserData();
   }
 
@@ -34,7 +36,7 @@ export class AuthService {
   SaveAccessToken(accessToken: string): void {
     AuthStorage.SetAccessToken(accessToken);
   }
-  
+
   GetAccessToken(): string | null {
     return AuthStorage.GetAccessToken();
   }
@@ -43,7 +45,7 @@ export class AuthService {
     this.CurrentUser = user;
     AuthStorage.SetUserData(user);
   }
-  
+
   GetCurrentUser(): UserResponse | null {
     return this.CurrentUser;
   }
@@ -59,7 +61,27 @@ export class AuthService {
     AuthStorage.Clear();
   }
 
+  logoutAndRedirect(): void {
+    this.ClearSession();
+    this.router.navigate(['/login']);
+  }
+
   IsAuthenticated(): boolean {
-    return !!this.GetAccessToken();
+    const token = this.GetAccessToken();
+    if (!token) {
+      return false;
+    }
+
+    try {
+      const decodedToken: { exp: number } = jwtDecode(token);
+      const expirationDate = decodedToken.exp * 1000;
+      if (expirationDate < new Date().getTime()) {
+        return false;
+      }
+    } catch (error) {
+      return false; 
+    }
+
+    return true;
   }
 }

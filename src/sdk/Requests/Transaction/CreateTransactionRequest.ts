@@ -11,6 +11,6 @@ export interface CreateTransactionRequest
      EventId?: number;
      PendingExpenseId?: number;
      LoanId?: number;
-     AppliedExchangeRate?: boolean;
+     AppliedExchangeRate?: number;
      UploadedFiles?: File[];
 }

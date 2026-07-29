@@ -217,9 +217,16 @@
             required
           ></ion-input>
 
-          <ion-item class="ion-margin-bottom">
-            <ion-toggle formControlName="AppliedExchangeRate">Tasa de cambio aplicada</ion-toggle>
-          </ion-item>
+          <ion-input
+               mode="md"
+               fill="outline"
+               label="Tasa aplicada"
+               labelPlacement="stacked"
+               type="number"
+               formControlName="AppliedExchangeRate"
+               [errorText]="getErrorMessage('AppliedExchangeRate')"
+               class="ion-margin-bottom"
+          ></ion-input>
 
           <div class="ion-margin-bottom">
             <input type="file" multiple (change)="onFileChange($event)" #fileInput style="display: none;" />

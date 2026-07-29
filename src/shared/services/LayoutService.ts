@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { MenuController } from '@ionic/angular/standalone';
 
 @Injectable({

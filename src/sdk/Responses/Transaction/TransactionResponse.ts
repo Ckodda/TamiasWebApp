@@ -10,7 +10,7 @@ export interface TransactionResponse
      PaymentMethodId?: number;
      TransactionAmount?: number;
      TransactionType?: string;
-     AppliedExchangeRate?: boolean;
+     AppliedExchangeRate?: number;
      AccountingPeriod?: string;
      TransactionDescription?: string;
      ReceiptImagePath?: string;

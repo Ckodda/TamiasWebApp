@@ -1,15 +1,14 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { ToastService } from '../../components/toast/toast.service';
 import { AuthStorage } from 'src/sdk/Actions/Auth/AuthStorage';
+import { AuthService } from 'src/sdk/Actions/Auth/AuthService';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const router = inject(Router);
+  const authService = inject(AuthService);
   const toastService = inject(ToastService);
   
-  // Recuperar el token usando la abstracción AuthStorage
   const token = AuthStorage.GetAccessToken();
 
   let authReq = req;
@@ -22,9 +21,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401) {
-        AuthStorage.Clear(); // Limpiar sesión completa (token, datos de usuario y capacidades)
         toastService.showError('Sesión expirada. Inicie sesión nuevamente.');
-        router.navigate(['/login']);
+        authService.logoutAndRedirect();
       }
       return throwError(() => error);
     })
