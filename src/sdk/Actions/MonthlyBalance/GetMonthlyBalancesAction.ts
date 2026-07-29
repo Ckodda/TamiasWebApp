@@ -1,23 +1,22 @@
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, throwError } from "rxjs";
-import { GetTransactionsRequest } from "../../Requests/Transaction/GetTransactionsRequest";
-import { ApiResponse } from "../../Responses/ApiResponse";
-import { PaginatedResponse } from "../../Responses/PaginatedResponse";
-import { TransactionResponse } from "../../Responses/Transaction/TransactionResponse";
+import { ApiResponse } from "../../../sdk/Responses/ApiResponse";
+import { PaginatedResponse } from "../../../sdk/Responses/PaginatedResponse";
 import { AuthStorage } from "../Auth/AuthStorage";
-import { TAMIAS_AUTH_ENDPOINTS } from "src/sdk/api.config";
+import { TAMIAS_AUTH_ENDPOINTS } from "../../api.config";
+import { GetMonthlyBalancesRequest } from "../../../sdk/Requests/MonthlyBalance/GetMonthlyBalancesRequest";
+import { MonthlyBalanceResponse } from "../../../sdk/Responses/MonthlyBalance/MonthlyBalanceResponse";
 
 @Injectable({
      providedIn: 'root'
 })
-
-export class GetTransactionsAction
+export class GetMonthlyBalancesAction 
 {
      constructor(private http: HttpClient) 
      {}
 
-     Execute(request: GetTransactionsRequest) : Observable<ApiResponse<PaginatedResponse<TransactionResponse>>>
+     Execute(request: GetMonthlyBalancesRequest) : Observable<ApiResponse<PaginatedResponse<MonthlyBalanceResponse>>>
      {
           const token = AuthStorage.GetAccessToken();
           if (!token) {
@@ -27,7 +26,7 @@ export class GetTransactionsAction
           const headers = new HttpHeaders({
                Authorization: `Bearer ${token}`,
           });
-          const url = `${TAMIAS_AUTH_ENDPOINTS.transactions}`;
+          const url = `${TAMIAS_AUTH_ENDPOINTS.monthlyBalances}`;
           
           const params = new HttpParams({
                fromObject: Object.entries(request).reduce((acc, [key, value]) => {
@@ -36,6 +35,6 @@ export class GetTransactionsAction
                }, {} as any)
           });
 
-          return this.http.get<ApiResponse<PaginatedResponse<TransactionResponse>>>(url, { headers, params });
+          return this.http.get<ApiResponse<PaginatedResponse<MonthlyBalanceResponse>>>(url, { headers, params });
      }
 }

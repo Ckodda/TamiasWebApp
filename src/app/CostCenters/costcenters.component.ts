@@ -26,7 +26,7 @@ import { searchOutline, refreshOutline, filterOutline, addOutline } from 'ionico
 import { GetCostCentersAction } from 'src/sdk/Actions/CostCenter/GetCostCentersAction';
 import { GetCostCentersRequest } from 'src/sdk/Requests/CostCenter/GetCostCentersRequest';
 import { CostCenterResponse } from 'src/sdk/Responses/CostCenter/CostCenterResponse';
-import { TableComponent, TableColumn } from '../components/table/table.component';
+import { TableComponent, TableColumn, ActionButton } from '../components/table/table.component';
 import { CreateComponent } from './CreateCostCenter/create.component';
 import { UpdateComponent } from './UpdateCostCenter/update.component';
 
@@ -75,6 +75,8 @@ export class CostCentersComponent implements OnInit {
     PageSize: 10,
   };
 
+  public actionButtons: ActionButton[] = [];
+
   constructor(
     private getCostCentersAction: GetCostCentersAction,
     private modalController: ModalController,
@@ -91,6 +93,12 @@ export class CostCentersComponent implements OnInit {
       { key: 'IsActive', label: 'Estado', size: '6', sizeMd: '2', type: 'badge', cssClass: 'ion-text-center' },
       { key: 'actions', label: 'Acciones', size: '6', sizeMd: '2', type: 'actions', cssClass: 'ion-text-center' },
     ];
+
+     this.actionButtons = [
+          { icon: 'pencil-outline', color: 'primary', action: 'edit', label: '' },
+          { icon: 'trash-outline', color: 'danger', action: 'delete', label: '' }
+     ];
+
     this.LoadData();
   }
 
@@ -139,14 +147,15 @@ export class CostCentersComponent implements OnInit {
     this.LoadData();
   }
 
-  onTableEdit(item: CostCenterResponse) {
-    this.openUpdateModal(item);
+  onTableAction(event: { action: string; item: CostCenterResponse }) {
+     if (event.action === 'edit') {
+          this.openUpdateModal(event.item);
+     }
+     else if (event.action === 'delete') {
+          // Implementar lógica de eliminación futura
+     }
   }
-
-  onTableDelete(item: CostCenterResponse) {
-    // Implementar lógica de eliminación con un AlertController si es necesario
-  }
-
+  
   async openCreateModal() {
     const modal = await this.modalController.create({
       component: CreateComponent,

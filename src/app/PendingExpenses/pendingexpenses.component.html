@@ -175,9 +175,9 @@
      [totalCount]="totalCount()"
      [pageNumber]="filters.PageNumber!"
      [pageSize]="filters.PageSize!"
-     [totalLabel]="'gastos pendientes'"
-     (edit)="onTableEdit($event)"
-     (delete)="onTableDelete($event)"
+     [actionButtons]="actionButtons"
+     totalLabel="'gastos pendientes'"
+     (action)="onTableAction($event)"
      (pageChange)="onTablePageChange($event)"
      (pageSizeChange)="onTablePageSizeChange($event)"
      ></app-table>

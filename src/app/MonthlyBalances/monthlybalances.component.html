@@ -1,12 +1,8 @@
 <ion-content class="ion-padding">
   <div class="ion-margin-bottom ion-flex ion-justify-content-between ion-align-items-center ion-flex-wrap" style="gap: 10px;">
     <ion-text color="dark">
-      <h1 class="ion-no-margin" style="font-weight: bold;">Transacciones</h1>
+      <h1 class="ion-no-margin" style="font-weight: bold;">Reporte de Balances</h1>
     </ion-text>
-    <ion-button color="success" (click)="navigateToCreate()">
-      <ion-icon slot="start" name="add-outline"></ion-icon>
-      Nueva Transacción
-    </ion-button>
   </div>
 
   <!-- Sección de Filtros -->
@@ -20,40 +16,32 @@
     <ion-card-content style="overflow: visible;">
       <ion-grid>
         <ion-row>
-          <ion-col size="12" size-md="1">
+          <ion-col size="12" size-md="2">
             <ion-input
               mode="md"
               fill="outline"
-              label="ID"
+              label="Fecha de Inicio"
               labelPlacement="stacked"
-              type="number"
-              [(ngModel)]="filters.Id"
-              placeholder="Ej: 1"
-              [errorText]="validationErrors()?.Id ? validationErrors().Id[0] : ''"
-              [class.ion-invalid]="validationErrors()?.Id"
-              [class.ion-touched]="validationErrors()?.Id"
+              type="date"
+              [(ngModel)]="filters.StartMonth"
+              [errorText]="validationErrors()?.StartMonth ? validationErrors().StartMonth[0] : ''"
+              [class.ion-invalid]="validationErrors()?.StartMonth"
+              [class.ion-touched]="validationErrors()?.StartMonth"
             ></ion-input>
           </ion-col>
-
           <ion-col size="12" size-md="2">
-            <ion-select
+            <ion-input
               mode="md"
               fill="outline"
-              label="Tipo de Transacción"
+              label="Fecha de Fin"
               labelPlacement="stacked"
-              [(ngModel)]="filters.TransactionType"
-              placeholder="Seleccione..."
-              interface="popover"
-              [errorText]="validationErrors()?.TransactionType ? validationErrors().TransactionType[0] : ''"
-              [class.ion-invalid]="validationErrors()?.TransactionType"
-              [class.ion-touched]="validationErrors()?.TransactionType"
-            >
-              <ion-select-option [value]="null">Todos</ion-select-option>
-              <ion-select-option value="Income">Ingreso</ion-select-option>
-              <ion-select-option value="Expense">Gasto</ion-select-option>
-            </ion-select>
+              type="date"
+              [(ngModel)]="filters.EndMonth"
+              [errorText]="validationErrors()?.EndMonth ? validationErrors().EndMonth[0] : ''"
+              [class.ion-invalid]="validationErrors()?.EndMonth"
+              [class.ion-touched]="validationErrors()?.EndMonth"
+            ></ion-input>
           </ion-col>
-
           <ion-col size="12" size-md="3">
             <ion-select
               mode="md"
@@ -83,35 +71,6 @@
               ></app-searchable-select>
             </ion-select>
           </ion-col>
-          
-          <ion-col size="12" size-md="2">
-            <ion-input
-              mode="md"
-              fill="outline"
-              label="Fecha de Inicio"
-              labelPlacement="stacked"
-              type="date"
-              [(ngModel)]="filters.StartDate"
-              [errorText]="validationErrors()?.StartDate ? validationErrors().StartDate[0] : ''"
-              [class.ion-invalid]="validationErrors()?.StartDate"
-              [class.ion-touched]="validationErrors()?.StartDate"
-            ></ion-input>
-          </ion-col>
-
-          <ion-col size="12" size-md="2">
-            <ion-input
-              mode="md"
-              fill="outline"
-              label="Fecha de Fin"
-              labelPlacement="stacked"
-              type="date"
-              [(ngModel)]="filters.EndDate"
-              [errorText]="validationErrors()?.EndDate ? validationErrors().EndDate[0] : ''"
-              [class.ion-invalid]="validationErrors()?.EndDate"
-              [class.ion-touched]="validationErrors()?.EndDate"
-            ></ion-input>
-          </ion-col>
-
           <ion-col size="12" size-md="2" class="ion-align-self-center">
               <ion-button expand="block" (click)="LoadData()" [disabled]="isLoading()">
                 <ion-icon slot="start" name="search-outline" *ngIf="!isLoading()"></ion-icon>
@@ -123,18 +82,14 @@
       </ion-grid>
     </ion-card-content>
   </ion-card>
-
-  <!-- Reutilización del componente de tabla genérico -->
      <app-table
-     [items]="transactions()"
-     [columns]="transactionsColumns"
+     [items]="monthlyBalances()"
+     [columns]="columns"
      [isLoading]="isLoading()"
      [totalCount]="totalCount()"
      [pageNumber]="filters.PageNumber!"
      [pageSize]="filters.PageSize!"
-     [actionButtons]="actionButtons"
-     totalLabel="'transacciones'"
-     (action)="onTableAction($event)"
+     totalLabel="'registros'"
      (pageChange)="onTablePageChange($event)"
      (pageSizeChange)="onTablePageSizeChange($event)"
      ></app-table>

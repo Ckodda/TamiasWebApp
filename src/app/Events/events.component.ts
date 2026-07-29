@@ -23,7 +23,7 @@ import { ToastService } from '../components/toast/toast.service';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { searchOutline, refreshOutline, filterOutline, addOutline, closeCircle } from 'ionicons/icons';
-import { TableComponent, TableColumn } from '../components/table/table.component';
+import { TableComponent, TableColumn, ActionButton } from '../components/table/table.component';
 import { GetEventsRequest } from '../../sdk/Requests/Event/GetEventsRequest';
 import { GetEventsAction } from '../../sdk/Actions/Event/GetEventsAction';
 import { EventResponse } from '../../sdk/Responses/Event/EventResponse';
@@ -76,6 +76,8 @@ export class EventsComponent implements OnInit {
      PageSize: 10,
   };
 
+  public actionButtons: ActionButton[] = [];
+
   constructor(
     private getEventsAction: GetEventsAction,
     private getCurrenciesAction: GetCurrenciesAction,
@@ -98,6 +100,11 @@ export class EventsComponent implements OnInit {
       { key: 'IsActive', label: 'Activo', size: '6', sizeMd: '1', type: 'badge', cssClass: 'ion-text-start' },      
       { key: 'actions', label: 'Acciones', size: '6', sizeMd: '2', type: 'actions', cssClass: 'ion-text-end' },
     ];
+
+    this.actionButtons = [
+          { icon: 'pencil-outline', color: 'primary', action: 'edit', label: '' },
+          { icon: 'trash-outline', color: 'danger', action: 'delete', label: '' }
+     ];
   }
 
   ionViewWillEnter() {
@@ -189,12 +196,11 @@ export class EventsComponent implements OnInit {
     this.LoadData();
   }
 
-  onTableEdit(item: EventResponse) {
-    this.openUpdateModal(item);
-  }
-
-  onTableDelete(item: EventResponse) {
-    // Implementar lógica de eliminación futura
+  onTableAction(event: { action: string; item: EventResponse }) {
+    if (event.action === 'edit') {
+          this.openUpdateModal(event.item);
+     } else if (event.action === 'delete') {
+     }
   }
 
   navigateToCreate() {

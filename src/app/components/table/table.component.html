@@ -15,24 +15,32 @@
             <ng-container [ngSwitch]="col.type">
               <!-- Caso Badge -->
               <div *ngSwitchCase="'badge'">
-                <ion-badge [color]="item[col.key] ? 'success' : 'medium'">
-                  {{ item[col.key] ? 'Activo' : 'Inactivo' }}
+                <ion-badge 
+                  [color]="col.classFormatter ? col.classFormatter(item, col.key) : (item[col.key] ? 'success' : 'medium')"
+                >
+                  {{ col.valueFormatter ? col.valueFormatter(item, col.key) : (item[col.key] ? 'Activo' : 'Inactivo') }}
                 </ion-badge>
               </div>
 
               <!-- Caso Acciones -->
               <div *ngSwitchCase="'actions'" class="ion-text-nowrap ion-flex ion-justify-content-end">
-                <ion-button fill="clear" color="primary" size="small" (click)="$event.stopPropagation(); edit.emit(item)">
-                  <ion-icon slot="icon-only" name="pencil-outline"></ion-icon>
-                </ion-button>
-                <ion-button fill="clear" color="danger" size="small" (click)="$event.stopPropagation(); delete.emit(item)">
-                  <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-                </ion-button>
+                <ng-container *ngFor="let button of actionButtons">
+                  <ion-button
+                    *ngIf="shouldShowButton(button, item)"
+                    [fill]="button.fill || 'clear'"
+                    [color]="button.color"
+                    size="small"
+                    (click)="handleAction(button.action, item, $event)"
+                  >
+                    <ion-icon slot="icon-only" [name]="button.icon"></ion-icon>
+                    <ion-label *ngIf="button.label">{{ button.label }}</ion-label>
+                  </ion-button>
+                </ng-container>
               </div>
 
               <!-- Texto por Defecto -->
-              <ion-text *ngSwitchDefault>
-                {{ item[col.key] }}
+              <ion-text *ngSwitchDefault [class]="col.classFormatter ? col.classFormatter(item, col.key) : ''">
+                {{ col.valueFormatter ? col.valueFormatter(item, col.key) : item[col.key] }}
               </ion-text>
             </ng-container>
           </td>

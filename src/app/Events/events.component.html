@@ -130,9 +130,9 @@
      [totalCount]="totalCount()"
      [pageNumber]="filters.PageNumber!"
      [pageSize]="filters.PageSize!"
-     [totalLabel]="'eventos'"
-     (edit)="onTableEdit($event)"
-     (delete)="onTableDelete($event)"
+     [actionButtons]="actionButtons"
+     totalLabel="'eventos'"
+     (action)="onTableAction($event)"
      (pageChange)="onTablePageChange($event)"
      (pageSizeChange)="onTablePageSizeChange($event)"
      ></app-table>

@@ -20,9 +20,12 @@ import { ToastService } from '../../components/toast/toast.service';
 import { UpdateEventAction } from '../../../sdk/Actions/Event/UpdateEventAction';
 import { EventResponse } from '../../../sdk/Responses/Event/EventResponse';
 import { UpdateEventRequest } from '../../../sdk/Requests/Event/UpdateEventRequest';
+import { PaymentMethodResponse } from 'src/sdk/Responses/PaymentMethod/PaymentMethodResponse';
+import { UpdatePaymentMethodRequest } from 'src/sdk/Requests/PaymentMethod/UpdatePaymentMethodRequest';
+import { UpdatePaymentMethodAction } from 'src/sdk/Actions/PaymentMethod/UpdatePaymentMethodAction';
 
 @Component({
-  selector: 'app-update-event',
+  selector: 'app-update-payment-method',
   templateUrl: './update.component.html',
   styleUrls: ['./update.component.scss'],
   standalone: true,
@@ -43,7 +46,7 @@ import { UpdateEventRequest } from '../../../sdk/Requests/Event/UpdateEventReque
   ],
 })
 export class UpdateComponent implements OnInit {
-  @Input() event!: EventResponse;
+  @Input() paymentMethod!: PaymentMethodResponse;
 
   public form!: FormGroup;
   public isLoading = signal<boolean>(false);
@@ -52,20 +55,15 @@ export class UpdateComponent implements OnInit {
   constructor(
     private modalController: ModalController,
     private fb: FormBuilder,
-    private updateAction: UpdateEventAction,
+    private updateAction: UpdatePaymentMethodAction,
     private toastService: ToastService
   ) {}
 
   ngOnInit() {
     this.form = this.fb.group({
-          Id: [this.event.Id, Validators.required],
-          CostCenterId: [this.event.CostCenterId, Validators.required],
-          EventName: [this.event.EventName, [Validators.required, Validators.maxLength(100)]],
-          TargetAmount: [this.event.TargetAmount, [Validators.required, Validators.min(0)]],
-          EventStatus: [this.event.EventStatus, Validators.required],
-          StartDate: [this.event.StartDate, Validators.required],
-          CurrencyId: [this.event.CurrencyId, Validators.required],
-          IsActive: [this.event.IsActive, Validators.required]
+          Id: [this.paymentMethod.Id, Validators.required],
+          MethodName: [this.paymentMethod.MethodName, [Validators.required, Validators.maxLength(100)]],
+          IsActive: [this.paymentMethod.IsActive, Validators.required]
     });
   }
 
@@ -86,7 +84,7 @@ export class UpdateComponent implements OnInit {
     if (this.form.invalid) return this.form.markAllAsTouched();
 
     this.isLoading.set(true);
-    const request: UpdateEventRequest = { ...this.form.value };
+    const request: UpdatePaymentMethodRequest = { ...this.form.value };
 
     this.updateAction.Execute(request).subscribe({
       next: (res) => {

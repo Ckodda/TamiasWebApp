@@ -21,13 +21,13 @@ import {
 } from '@ionic/angular/standalone';
 import { ToastService } from "../components/toast/toast.service";
 import { addIcons } from 'ionicons';
-import { searchOutline, refreshOutline, filterOutline, addOutline } from 'ionicons/icons';
+import { searchOutline, refreshOutline, filterOutline, addOutline, pencilOutline, trashOutline } from 'ionicons/icons';
 import { GetUsersAction } from "src/sdk/Actions/User/GetUsersAction";
 import { GetUsersRequest } from "src/sdk/Requests/User/GetUsersRequest";
 import { UserResponse } from "src/sdk/Responses/Auth";
 import { CreateComponent } from './CreateUser/create.component';
 import { UpdateComponent } from './UpdateUser/update.component';
-import { TableComponent, TableColumn } from '../components/table/table.component';
+import { TableComponent, TableColumn, ActionButton } from '../components/table/table.component';
 import { FormsModule } from "@angular/forms";
 
 @Component({
@@ -63,6 +63,7 @@ export class UsersComponent implements OnInit
 {
      public users = signal<UserResponse[]>([]);
      public userColumns: TableColumn[] = [];
+     public actionButtons: ActionButton[] = [];
      public totalCount = signal<number>(0);
      public isLoading = signal<boolean>(false);
      public validationErrors = signal<any>(null);
@@ -81,7 +82,7 @@ export class UsersComponent implements OnInit
           private modalController: ModalController,
           private toastService: ToastService
      ) {
-          addIcons({ searchOutline, refreshOutline, filterOutline, addOutline });
+          addIcons({ searchOutline, refreshOutline, filterOutline, addOutline, pencilOutline, trashOutline });
      }
 
      ngOnInit() {
@@ -89,9 +90,19 @@ export class UsersComponent implements OnInit
                { key: 'Id', label: 'Id', size: '12', sizeMd: '1' },
                { key: 'FullName', label: 'Nombre Completo', size: '12', sizeMd: '4' },
                { key: 'Email', label: 'Correo Electrónico', size: '12', sizeMd: '4' },
-               { key: 'IsActive', label: 'Estado', size: '6', sizeMd: '1', type: 'badge', cssClass: 'ion-text-center' },
-               { key: 'actions', label: 'Acciones', size: '6', sizeMd: '2', type: 'actions', cssClass: 'ion-text-center' }
+               {
+                    key: 'IsActive', label: 'Estado', size: '6', sizeMd: '1', type: 'badge',
+                    valueFormatter: (item) => item.IsActive ? 'Activo' : 'Inactivo',
+                    classFormatter: (item) => item.IsActive ? 'success' : 'warning'
+               },
+               { key: 'actions', label: 'Acciones', size: '6', sizeMd: '2', type: 'actions' }
           ];
+
+          this.actionButtons = [
+               { icon: 'pencil-outline', color: 'primary', action: 'edit', label: '' },
+               { icon: 'trash-outline', color: 'danger', action: 'delete', label: '' }
+          ];
+
           this.LoadData();
      }
 
@@ -133,12 +144,14 @@ export class UsersComponent implements OnInit
           this.LoadData();
      }
 
-     onTableEdit(item: UserResponse) {
-          this.openUpdateModal(item);
-     }
-
-     onTableDelete(item: UserResponse) {
-          // Implementar lógica de eliminación
+     onTableAction(event: { action: string, item: UserResponse }) {
+          if (event.action === 'edit') {
+               this.openUpdateModal(event.item);
+          } else if (event.action === 'delete') {
+               // Implementar lógica de eliminación
+               console.log('Delete action triggered for item', event.item);
+               this.toastService.showInfo('La función de eliminar aún no está implementada.');
+          }
      }
 
      async openCreateModal() {

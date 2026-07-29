@@ -74,7 +74,7 @@ export class UpdateComponent implements OnInit {
     private updateAction: UpdateLoanAction,
     private getLoansAction: GetLoansAction,
     private toastService: ToastService,
-    private getCurrenciesAction: GetCurrenciesAction,
+    private getCurrenciesAction: GetCurrenciesAction
   ) {}
 
   ngOnInit() {
@@ -151,23 +151,23 @@ export class UpdateComponent implements OnInit {
 
   onCurrencySearchChange(term: string) {
     if (term.length < 3) {
-      this.currencies.set([]);
-      this.isSearchingCurrencies.set(false);
-      return;
-    }
-    this.isSearchingCurrencies.set(true);
-    this.getCurrenciesAction.Execute({ CurrencyCode: term }).subscribe({
-      next: (res) => {
-        if (res.Code === 200 && res.Content) {
-          this.currencies.set(res.Content.Items);
-        }
-        this.isSearchingCurrencies.set(false);
-      },
-      error: () => {
-        this.isSearchingCurrencies.set(false);
-        this.currencies.set([]);
-      }
-    });
+          this.currencies.set([]);
+          this.isSearchingCurrencies.set(false);
+          return;
+     }
+     this.isSearchingCurrencies.set(true);
+     this.getCurrenciesAction.Execute({ CurrencyCode: term }).subscribe({
+          next: (res) => {
+          if (res.Code === 200 && res.Content) {
+               this.currencies.set(res.Content.Items);
+          }
+          this.isSearchingCurrencies.set(false);
+          },
+          error: () => {
+          this.isSearchingCurrencies.set(false);
+          this.currencies.set([]);
+          }
+     });
   }
 
   onCurrencySelected(item: CurrencyResponse) {

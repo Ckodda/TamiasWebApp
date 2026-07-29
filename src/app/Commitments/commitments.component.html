@@ -164,9 +164,9 @@
      [totalCount]="totalCount()"
      [pageNumber]="filters.PageNumber!"
      [pageSize]="filters.PageSize!"
-     [totalLabel]="'compromisos'"
-     (edit)="onTableEdit($event)"
-     (delete)="onTableDelete($event)"
+     [actionButtons]="actionButtons"
+     totalLabel="'compromisos'"
+     (action)="onTableAction($event)"
      (pageChange)="onTablePageChange($event)"
      (pageSizeChange)="onTablePageSizeChange($event)"
      ></app-table>

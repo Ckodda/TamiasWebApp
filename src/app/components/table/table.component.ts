@@ -19,7 +19,7 @@ import {
   IonLabel
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { pencilOutline, trashOutline, chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
+import { chevronBackOutline, chevronForwardOutline, eyeOutline, pencilOutline, trashOutline } from 'ionicons/icons';
 
 export interface TableColumn {
   key: string;
@@ -28,6 +28,17 @@ export interface TableColumn {
   sizeMd: string;
   type?: 'text' | 'badge' | 'actions';
   cssClass?: string;
+  valueFormatter?: (item: any, key: string) => string;
+  classFormatter?: (item: any, key: string) => string;
+}
+
+export interface ActionButton {
+  icon: string;
+  color: string;
+  action: string;
+  label?: string;
+  fill?: 'clear' | 'outline' | 'solid' | 'default';
+  show?: (item: any) => boolean;
 }
 
 @Component({
@@ -58,24 +69,25 @@ export interface TableColumn {
 export class TableComponent {
   @Input() items: any[] = [];
   @Input() columns: TableColumn[] = [];
+  @Input() actionButtons: ActionButton[] = [];
   @Input() isLoading: boolean = false;
   @Input() totalCount: number = 0;
   @Input() pageNumber: number = 1;
   @Input() pageSize: number = 10;
   @Input() totalLabel: string = 'registros';
 
-  @Output() edit = new EventEmitter<any>();
-  @Output() delete = new EventEmitter<any>();
+  @Output() action = new EventEmitter<{ action: string, item: any }>();
   @Output() pageChange = new EventEmitter<number>();
   @Output() pageSizeChange = new EventEmitter<number>();
 
   constructor() {
-    addIcons({ pencilOutline, trashOutline, chevronBackOutline, chevronForwardOutline });
+    addIcons({ chevronBackOutline, chevronForwardOutline, eyeOutline, pencilOutline, trashOutline });
   }
 
   get totalPages(): number {
     return Math.ceil(this.totalCount / this.pageSize);
   }
+
 
   onPrevPage() {
     if (this.pageNumber > 1) this.pageChange.emit(this.pageNumber - 1);
@@ -87,5 +99,17 @@ export class TableComponent {
 
   onSizeChange() {
     this.pageSizeChange.emit(this.pageSize);
+  }
+
+  handleAction(action: string, item: any, event: Event) {
+    event.stopPropagation();
+    this.action.emit({ action, item });
+  }
+
+  shouldShowButton(button: ActionButton, item: any): boolean {
+    if (button.show) {
+      return button.show(item);
+    }
+    return true;
   }
 }

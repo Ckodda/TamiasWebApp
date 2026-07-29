@@ -1,0 +1,285 @@
+<ion-header mode="ios">
+  <ion-toolbar>
+    <ion-title>Crear Transacción</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/transactions"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">Cancelar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+     <form *ngIf="form" [formGroup]="form" (ngSubmit)="createTransaction()">
+          <ion-select
+               mode="md"
+               fill="outline"
+               label="Usuario *"
+               labelPlacement="stacked"
+               formControlName="UserId"
+               placeholder="Seleccione..."
+               [errorText]="getErrorMessage('UserId')"
+               required
+               interface="popover"
+               class="ion-margin-bottom"
+          >
+               <ion-select-option [value]="null">Seleccione...</ion-select-option>
+               <ion-select-option *ngIf="selectedUser() as sel" [value]="sel.Id">
+               {{ userLabelFn(sel) }}
+               </ion-select-option>
+               <app-searchable-select
+               slot="end"
+               placeholder="Buscar Usuario..."
+               [items]="users()"
+               [loading]="isSearchingUsers()"
+               [itemLabelFn]="userLabelFn"
+               [itemNoteFn]="userNoteFn"
+               (searchChange)="onUserSearchChange($event)"
+               (itemSelected)="onUserSelected($event)"
+               ></app-searchable-select>
+          </ion-select>
+     
+          <ion-select
+               mode="md"
+               fill="outline"
+               label="Centro de Costo *"
+               labelPlacement="stacked"
+               formControlName="CostCenterId"
+               placeholder="Seleccione..."
+               [errorText]="getErrorMessage('CostCenterId')"
+               required
+               interface="popover"
+               class="ion-margin-bottom"
+          >
+               <ion-select-option [value]="null">Seleccione...</ion-select-option>
+               <ion-select-option *ngIf="selectedCostCenter() as sel" [value]="sel.Id">
+               {{ costCenterLabelFn(sel) }}
+               </ion-select-option>
+               <app-searchable-select
+               slot="end"
+               placeholder="Buscar Centro de Costo..."
+               [items]="costCenters()"
+               [loading]="isSearchingCostCenters()"
+               [itemLabelFn]="costCenterLabelFn"
+               [itemNoteFn]="costCenterNoteFn"
+               (searchChange)="onCostCenterSearchChange($event)"
+               (itemSelected)="onCostCenterSelected($event)"
+               ></app-searchable-select>
+          </ion-select>
+
+          <ion-select
+               mode="md"
+               fill="outline"
+               label="Moneda *"
+               labelPlacement="stacked"
+               formControlName="CurrencyId"
+               placeholder="Seleccione..."
+               [errorText]="getErrorMessage('CurrencyId')"
+               required
+               interface="popover"
+               class="ion-margin-bottom"
+          >
+               <ion-select-option [value]="null">Seleccione...</ion-select-option>
+               <ion-select-option *ngIf="selectedCurrency() as sel" [value]="sel.Id">
+               {{ currencyLabelFn(sel) }}
+               </ion-select-option>
+               <app-searchable-select
+               slot="end"
+               placeholder="Buscar Moneda..."
+               [items]="currencies()"
+               [loading]="isSearchingCurrencies()"
+               [itemLabelFn]="currencyLabelFn"
+               [itemNoteFn]="currencyNoteFn"
+               (searchChange)="onCurrencySearchChange($event)"
+               (itemSelected)="onCurrencySelected($event)"
+               ></app-searchable-select>
+          </ion-select>
+
+          <ion-select
+               mode="md"
+               fill="outline"
+               label="Método de Pago *"
+               labelPlacement="stacked"
+               formControlName="PaymentMethodId"
+               placeholder="Seleccione..."
+               [errorText]="getErrorMessage('PaymentMethodId')"
+               required
+               interface="popover"
+               class="ion-margin-bottom"
+          >
+               <ion-select-option [value]="null">Seleccione...</ion-select-option>
+               <ion-select-option *ngIf="selectedPaymentMethod() as sel" [value]="sel.Id">
+               {{ paymentMethodLabelFn(sel) }}
+               </ion-select-option>
+               <app-searchable-select
+               slot="end"
+               placeholder="Buscar Método de Pago..."
+               [items]="paymentMethods()"
+               [loading]="isSearchingPaymentMethods()"
+               [itemLabelFn]="paymentMethodLabelFn"
+               [itemNoteFn]="paymentMethodNoteFn"
+               (searchChange)="onPaymentMethodSearchChange($event)"
+               (itemSelected)="onPaymentMethodSelected($event)"
+               ></app-searchable-select>
+          </ion-select>
+
+          <ion-select
+               mode="md"
+               fill="outline"
+               label="Evento"
+               labelPlacement="stacked"
+               formControlName="EventId"
+               placeholder="Seleccione..."
+               [errorText]="getErrorMessage('EventId')"
+               interface="popover"
+               class="ion-margin-bottom"
+          >
+               <ion-select-option [value]="null">Ninguno</ion-select-option>
+               <ion-select-option *ngIf="selectedEvent() as sel" [value]="sel.Id">
+               {{ eventLabelFn(sel) }}
+               </ion-select-option>
+               <app-searchable-select
+               slot="end"
+               placeholder="Buscar Evento..."
+               [items]="events()"
+               [loading]="isSearchingEvents()"
+               [itemLabelFn]="eventLabelFn"
+               [itemNoteFn]="eventNoteFn"
+               (searchChange)="onEventSearchChange($event)"
+               (itemSelected)="onEventSelected($event)"
+               ></app-searchable-select>
+          </ion-select>
+
+          <ion-select
+               mode="md"
+               fill="outline"
+               label="Préstamo"
+               labelPlacement="stacked"
+               formControlName="LoanId"
+               placeholder="Seleccione..."
+               [errorText]="getErrorMessage('LoanId')"
+               interface="popover"
+               class="ion-margin-bottom"
+          >
+               <ion-select-option [value]="null">Ninguno</ion-select-option>
+               <ion-select-option *ngIf="selectedLoan() as sel" [value]="sel.Id">
+               {{ loanLabelFn(sel) }}
+               </ion-select-option>
+               <app-searchable-select
+               slot="end"
+               placeholder="Buscar Préstamo..."
+               [items]="loans()"
+               [loading]="isSearchingLoans()"
+               [itemLabelFn]="loanLabelFn"
+               [itemNoteFn]="loanNoteFn"
+               (searchChange)="onLoanSearchChange($event)"
+               (itemSelected)="onLoanSelected($event)"
+               ></app-searchable-select>
+          </ion-select>
+
+          <ion-select
+            mode="md"
+            fill="outline"
+            label="Gasto Pendiente"
+            labelPlacement="stacked"
+            formControlName="PendingExpenseId"
+            placeholder="Seleccione..."
+            [errorText]="getErrorMessage('PendingExpenseId')"
+            interface="popover"
+            class="ion-margin-bottom"
+          >
+            <ion-select-option [value]="null">Ninguno</ion-select-option>
+            <ion-select-option *ngIf="selectedPendingExpense() as sel" [value]="sel.Id">
+              {{ pendingExpenseLabelFn(sel) }}
+            </ion-select-option>
+            <app-searchable-select
+              slot="end"
+              placeholder="Buscar Gasto Pendiente..."
+              [items]="pendingExpenses()"
+              [loading]="isSearchingPendingExpenses()"
+              [itemLabelFn]="pendingExpenseLabelFn"
+              [itemNoteFn]="pendingExpenseNoteFn"
+              (searchChange)="onPendingExpenseSearchChange($event)"
+              (itemSelected)="onPendingExpenseSelected($event)"
+            ></app-searchable-select>
+          </ion-select>
+
+          <ion-input
+            mode="md"
+            fill="outline"
+            label="Fecha *"
+            labelPlacement="stacked"
+            type="date"
+            formControlName="AccountingPeriod"
+            [errorText]="getErrorMessage('AccountingPeriod')"
+            class="ion-margin-bottom"
+            required
+          ></ion-input>
+
+          <ion-item class="ion-margin-bottom">
+            <ion-toggle formControlName="AppliedExchangeRate">Tasa de cambio aplicada</ion-toggle>
+          </ion-item>
+
+          <div class="ion-margin-bottom">
+            <input type="file" multiple (change)="onFileChange($event)" #fileInput style="display: none;" />
+            <ion-button expand="block" fill="outline" (click)="fileInput.click()">
+              <ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
+              Seleccionar Archivos
+            </ion-button>
+            <div *ngIf="form.get('UploadedFiles')?.value as files" class="ion-padding-top">
+              {{ files.length }} archivo(s) seleccionado(s)
+            </div>
+          </div>
+
+          <ion-select
+               mode="md"
+               fill="outline"
+               label="Tipo de Transacción *"
+               labelPlacement="stacked"
+               formControlName="TransactionType"
+               placeholder="Seleccione un tipo"
+               interface="popover"
+               [errorText]="getErrorMessage('TransactionType')"
+               class="ion-margin-bottom"
+               required
+          >
+               <ion-select-option value="Income">Ingreso</ion-select-option>
+               <ion-select-option value="Expense">Gasto</ion-select-option>
+          </ion-select>
+          <ion-input
+               mode="md"
+               fill="outline"
+               label="Monto *"
+               labelPlacement="stacked"
+               type="number"
+               formControlName="TransactionAmount"
+               placeholder="0.00"
+               [errorText]="getErrorMessage('TransactionAmount')"
+               class="ion-margin-bottom"
+               required
+          ></ion-input>
+          <ion-input
+               mode="md"
+               fill="outline"
+               label="Descripción"
+               labelPlacement="stacked"
+               type="text"
+               formControlName="TransactionDescription"
+               placeholder="Descripción de la transacción"
+               [errorText]="getErrorMessage('TransactionDescription')"
+               class="ion-margin-bottom"
+          ></ion-input>
+
+          <ion-text color="danger" *ngIf="validationErrors()?.general">
+               <small>{{ validationErrors().general[0] }}</small>
+          </ion-text>
+
+          <div class="ion-padding-top">
+               <ion-button expand="block" type="submit" [disabled]="isLoading()">
+               <ion-spinner slot="start" name="crescent" size="small" *ngIf="isLoading()"></ion-spinner>
+               {{ isLoading() ? 'Creando...' : 'Crear Transacción' }}
+               </ion-button>
+          </div>
+     </form>
+</ion-content>

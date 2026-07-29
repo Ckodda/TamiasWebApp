@@ -29,7 +29,7 @@ import { GetCurrenciesRequest } from 'src/sdk/Requests/Currency/GetCurrenciesReq
 import { CurrencyResponse } from 'src/sdk/Responses/Currency/CurrencyResponse';
 import { CreateComponent } from 'src/app/Currencies/CreateCurrency/create.component';
 import { UpdateComponent } from 'src/app/Currencies/UpdateCurrency/update.component';
-import { TableComponent, TableColumn } from '../components/table/table.component';
+import { TableComponent, TableColumn, ActionButton } from '../components/table/table.component';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -78,6 +78,8 @@ export class CurrenciesComponent implements OnInit {
     PageSize: 10
   };
 
+  public actionButtons: ActionButton[] = [];
+
   constructor(
     private getCurrenciesAction: GetCurrenciesAction,
     private modalController: ModalController,
@@ -94,6 +96,10 @@ export class CurrenciesComponent implements OnInit {
       { key: 'CurrencySymbol', label: 'Símbolo', size: '12', sizeMd: '2' },
       { key: 'IsActive', label: 'Estado', size: '6', sizeMd: '2', type: 'badge', cssClass: 'ion-text-center' },
       { key: 'actions', label: 'Acciones', size: '6', sizeMd: '2', type: 'actions', cssClass: 'ion-text-center' }
+    ];
+    this.actionButtons = [
+      { icon: 'pencil-outline', color: 'primary', action: 'edit', label: '' },
+      { icon: 'trash-outline', color: 'danger', action: 'delete', label: '' }
     ];
     this.LoadData();
   }
@@ -137,12 +143,12 @@ export class CurrenciesComponent implements OnInit {
     this.LoadData();
   }
 
-  onTableEdit(item: CurrencyResponse) {
-    this.openUpdateModal(item);
-  }
-
-  onTableDelete(item: CurrencyResponse) {
-    // Implementar lógica de eliminación
+  onTableAction(event: { action: string; item: CurrencyResponse }) {
+    if (event.action === 'edit') {
+      this.openUpdateModal(event.item);
+     } else if (event.action === 'delete') {
+          // Implementar lógica de eliminación futura
+     }
   }
 
   async openCreateModal() {

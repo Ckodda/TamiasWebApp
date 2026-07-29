@@ -16,4 +16,5 @@ export interface CommitmentResponse
      UpdateAt?: Date;
      CreateBy?: number;
      UpdateBy?: number;
+     IsActive: boolean;
 }

@@ -97,9 +97,9 @@
     [totalCount]="totalCount()"
     [pageNumber]="filters.PageNumber!"
     [pageSize]="filters.PageSize!"
+    [actionButtons]="actionButtons"
     totalLabel="monedas"
-    (edit)="onTableEdit($event)"
-    (delete)="onTableDelete($event)"
+    (action)="onTableAction($event)"
     (pageChange)="onTablePageChange($event)"
     (pageSizeChange)="onTablePageSizeChange($event)"
   ></app-table>

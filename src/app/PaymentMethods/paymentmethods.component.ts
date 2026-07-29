@@ -24,7 +24,7 @@ import { ToastService } from '../components/toast/toast.service';
 import { addIcons } from 'ionicons';
 import { searchOutline, refreshOutline, filterOutline, addOutline } from 'ionicons/icons';
 
-import { TableComponent, TableColumn } from '../components/table/table.component';
+import { TableComponent, TableColumn, ActionButton } from '../components/table/table.component';
 import { UpdateComponent } from './UpdatePaymentMethod/update.component';
 import { CreateComponent } from './CreatePaymentMethod/create.component';
 import { PaymentMethodResponse } from '../../sdk/Responses/PaymentMethod/PaymentMethodResponse';
@@ -73,7 +73,7 @@ export class PaymentMethodsComponent implements OnInit {
     PageNumber: 1,
     PageSize: 10,
   };
-
+  public actionButtons: ActionButton[] = [];
   constructor(
     private getPaymentMethodsAction: GetPaymentMethodsAction,
     private modalController: ModalController,
@@ -89,6 +89,10 @@ export class PaymentMethodsComponent implements OnInit {
       { key: 'IsActive', label: 'Estado', size: '6', sizeMd: '2', type: 'badge', cssClass: 'ion-text-start' },
       { key: 'actions', label: 'Acciones', size: '6', sizeMd: '2', type: 'actions', cssClass: 'ion-text-end' },
     ];
+    this.actionButtons = [
+          { icon: 'pencil-outline', color: 'primary', action: 'edit', label: '' },
+          { icon: 'trash-outline', color: 'danger', action: 'delete', label: '' }
+     ];
     this.LoadData();
   }
 
@@ -135,13 +139,10 @@ export class PaymentMethodsComponent implements OnInit {
     this.filters.PageNumber = pageNumber;
     this.LoadData();
   }
-
-  onTableEdit(item: PaymentMethodResponse) {
-    this.openUpdateModal(item);
-  }
-
-  onTableDelete(item: PaymentMethodResponse) {
-    // Implementar lógica de eliminación futura
+  onTableAction(event: { action: string; item: PaymentMethodResponse }) {
+     if (event.action === 'edit') {
+          this.openUpdateModal(event.item);
+     }
   }
 
   async openCreateModal() {

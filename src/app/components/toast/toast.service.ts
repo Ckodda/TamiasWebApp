@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { checkmarkCircle, alertCircle, closeOutline } from 'ionicons/icons';
+import { checkmarkCircle, alertCircle, closeOutline, informationCircleOutline } from 'ionicons/icons';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ToastService {
   constructor(private toastController: ToastController) {
-    addIcons({ checkmarkCircle, alertCircle, closeOutline });
+    addIcons({ checkmarkCircle, alertCircle, closeOutline, informationCircleOutline });
   }
 
   async showSuccess(message: string) {
@@ -46,6 +46,26 @@ export class ToastService {
         { icon: 'close-outline', role: 'cancel' }
       ],
       mode: 'ios'
+    });
+    await toast.present();
+  }
+
+  async showInfo(message: string) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      position: 'bottom',
+      color: 'light',
+      cssClass: 'tamias-custom-toast tamias-toast-info',
+      buttons: [
+        {
+          side: 'start',
+          icon: 'information-circle-outline'
+        },
+        { icon: 'close-outline', role: 'cancel' }
+      ],
+      mode: 'ios',
+      translucent: true
     });
     await toast.present();
   }

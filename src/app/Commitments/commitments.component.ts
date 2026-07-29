@@ -3,7 +3,7 @@ import { GetCommitmentsRequest } from "src/sdk/Requests/Commitment/GetCommitment
 import { CommitmentResponse } from "src/sdk/Responses/Commitment/CommitmentResponse";
 import { CostCenterResponse } from "src/sdk/Responses/CostCenter/CostCenterResponse";
 import { CurrencyResponse } from "src/sdk/Responses/Currency/CurrencyResponse";
-import { TableColumn, TableComponent } from "../components/table/table.component";
+import { ActionButton, TableColumn, TableComponent } from "../components/table/table.component";
 import { ToastService } from "../components/toast/toast.service";
 import { GetCommitmentsAction } from "src/sdk/Actions/Commitment/GetCommitmentsAction";
 import { Router, RouterLink } from "@angular/router";
@@ -97,6 +97,8 @@ export class CommitmentsComponent implements OnInit
      public isSearchingEvents = signal<boolean>(false);
      public commitmentsColumns: TableColumn[] = [];
 
+     public actionButtons: ActionButton[] = [];
+
      constructor(
           private getCommitmentsAction: GetCommitmentsAction,
           private toastService: ToastService,
@@ -120,7 +122,12 @@ export class CommitmentsComponent implements OnInit
                { key: 'CurrentStatus', label:'Estado', size: '6', sizeMd: '1' },
                { key: 'IsActive', label:'Activo', size: '6', sizeMd: '1', type: 'badge' },
                { key: 'actions', label:'Actions', size: '6', sizeMd: '1', type: 'actions' },
-          ]
+          ];
+
+          this.actionButtons = [
+               { icon: 'pencil-outline', color: 'primary', action: 'edit', label: '' },
+               { icon: 'trash-outline', color: 'danger', action: 'delete', label: '' }
+          ];
      }
 
      ionViewWillEnter() {
@@ -231,13 +238,13 @@ export class CommitmentsComponent implements OnInit
           this.LoadData();
      }
 
-     onTableEdit(item: CommitmentResponse) {
-          this.router.navigate(['/commitments/edit', item.Id]);
-     }
-
-     onTableDelete(item: CommitmentResponse) {
-          // Implement delete logic with AlertController if needed
-          this.toastService.showError(`La eliminación para el compromiso con ID: ${item.Id} aún no está implementada.`);
+     onTableAction(event: { action: string; item: CommitmentResponse }) {
+          if (event.action === 'edit') {
+               this.router.navigate(['/commitments/edit', event.item.Id]);
+          }
+          else if (event.action === 'delete') {
+               this.toastService.showError(`La eliminación para el compromiso con ID: ${event.item.Id} aún no está implementada.`);
+          }
      }
 
      onTablePageChange(pageNumber: number) {

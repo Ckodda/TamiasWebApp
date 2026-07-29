@@ -44,9 +44,15 @@ export const routes: Routes = [
      {
           path: 'commitments',
           loadChildren: () => import('./Commitments/commitments.route').then(m => m.commitmentsRoutes)
+     },
+     {
+          path: 'transactions',
+          loadChildren: () => import('./Transactions/transactions.route').then(m => m.transactionsRoutes)
+     },
+     {
+          path:'monthly-balances',
+          loadComponent: () => import('./MonthlyBalances/monthlybalances.component').then((m) => m.MonthlyBalancesComponent)
      }
-
-      // Agregar más rutas aquí que requieran Navbar y Sidebar
     ]
   },
   {

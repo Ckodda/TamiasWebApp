@@ -119,9 +119,9 @@
      [totalCount]="totalCount()"
      [pageNumber]="filters.Page!"
      [pageSize]="filters.PageSize!"
-     [totalLabel]="'préstamos'"
-     (edit)="onTableEdit($event)"
-     (delete)="onTableDelete($event)"
+     [actionButtons]="actionButtons"
+     totalLabel="'préstamos'"
+     (action)="onTableAction($event)"
      (pageChange)="onTablePageChange($event)"
      (pageSizeChange)="onTablePageSizeChange($event)"
      ></app-table>

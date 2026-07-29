@@ -23,9 +23,9 @@ import {
   IonSelectOption,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { addOutline, refreshOutline, searchOutline } from 'ionicons/icons';
+import { addOutline, eyeOutline, refreshOutline, searchOutline } from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
-import { TableComponent, TableColumn } from '../components/table/table.component';
+import { ActionButton, TableComponent, TableColumn } from '../components/table/table.component';
 import { SearchableSelectComponent } from '../components/searchable/searchable-select.component';
 import { PendingExpenseResponse } from '../../sdk/Responses/PendingExpense/PendingExpenseResponse';
 import { GetPendingExpensesRequest } from '../../sdk/Requests/PendingExpense/GetPendingExpensesRequest';
@@ -94,6 +94,7 @@ export class PendingExpensesComponent implements OnInit {
   public selectedCurrency = signal<CurrencyResponse | null>(null);
   public isSearchingCurrencies = signal<boolean>(false);
   public pendingExpensesColumns: TableColumn[] = [];
+  public actionButtons: ActionButton[] = [];
 
   constructor(
     private getPendingExpenseAction: GetPendingExpensesAction,
@@ -102,7 +103,7 @@ export class PendingExpensesComponent implements OnInit {
     private getCostCentersAction: GetCostCentersAction,
     private getCurrenciesAction: GetCurrenciesAction
   ) {
-    addIcons({ addOutline, searchOutline, refreshOutline });
+    addIcons({ addOutline, searchOutline, refreshOutline, eyeOutline });
   }
 
   ngOnInit(): void {
@@ -115,9 +116,13 @@ export class PendingExpensesComponent implements OnInit {
       { key: 'CostCenterName', label: 'Centro de Costo', size: '6', sizeMd: '2' },
       { key: 'PaymentStatus', label: 'Estado', size: '6', sizeMd: '1' },
       { key: 'CurrencyCode', label: 'Moneda', size: '6', sizeMd: '1' },
-      { key: 'IsActive', label: 'Activo', size: '6', sizeMd: '1', type: 'badge' },
-      { key: 'actions', label: 'Acciones', size: '6', sizeMd: '1', type: 'actions' },
+      { key: 'actions', label: 'Acciones', size: '6', sizeMd: '2', type: 'actions', cssClass: 'ion-text-end' },
     ];
+
+    this.actionButtons = [
+          { icon: 'pencil-outline', color: 'primary', action: 'edit', label: '' },
+          { icon: 'trash-outline', color: 'danger', action: 'delete', label: '' }
+     ];
   }
 
   ionViewWillEnter() {
@@ -204,19 +209,19 @@ export class PendingExpensesComponent implements OnInit {
     this.LoadData();
   }
 
-  onTableEdit(item: PendingExpenseResponse) {
-    this.router.navigate(['/pending-expenses/edit', item.Id]);
-  }
-
-  onTableDelete(item: PendingExpenseResponse) {
-    // Implement delete logic with AlertController if needed
-    this.toastService.showError(`La eliminación para el gasto con ID: ${item.Id} aún no está implementada.`);
+  onTableAction(event: { action: string, item: PendingExpenseResponse }) {
+     if (event.action === 'edit') {
+          this.router.navigate(['/pending-expenses/edit', event.item.Id]);
+     } else if (event.action === 'delete') {
+          this.toastService.showSuccess(`Eliminar pendingexpense con ID: ${event.item.Id}`);
+     }
   }
 
   onTablePageChange(pageNumber: number) {
     this.filters.PageNumber = pageNumber;
     this.LoadData();
   }
+
 
   onTablePageSizeChange(pageSize: number) {
     this.filters.PageSize = pageSize;

@@ -26,7 +26,7 @@ import {
 import { addIcons } from "ionicons";
 import { addOutline, refreshOutline, searchOutline } from "ionicons/icons";
 
-import { TableComponent, TableColumn } from "../components/table/table.component";
+import { TableComponent, TableColumn, ActionButton } from "../components/table/table.component";
 import { GetLoansRequest } from "../../sdk/Requests/Loan/GetLoansRequest";
 import { GetLoansAction } from "../../sdk/Actions/Loan/GetLoansAction";
 import { LoanResponse } from "../../sdk/Responses/Loan/LoanResponse";
@@ -80,6 +80,7 @@ export class LoansComponent implements OnInit {
      };
 
      public loanColumns: TableColumn[] = [];
+     public actionButtons: ActionButton[] = [];
 
      constructor(
           private getLoansAction: GetLoansAction,
@@ -102,6 +103,12 @@ export class LoansComponent implements OnInit {
                { key: 'actions', label: 'Acciones', size: '6', sizeMd: '1', type: 'actions' },
            
           ];
+
+          this.actionButtons = [
+               { icon: 'pencil-outline', color: 'primary', action: 'edit', label: '' },
+               { icon: 'trash-outline', color: 'danger', action: 'delete', label: '' }
+          ];
+
           this.LoadData();
      }
 
@@ -136,13 +143,12 @@ export class LoansComponent implements OnInit {
           this.LoadData();
      }
 
-     onTableEdit(item: LoanResponse) {
-          this.router.navigate(['/loans/edit', item.Id]);
-     }
-
-     onTableDelete(item: LoanResponse) {
-          // Implementar lógica de eliminación con un AlertController si es necesario
-          this.toastService.showSuccess(`Eliminar préstamo con ID: ${item.Id}`);
+     onTableAction(event: { action: string; item: LoanResponse }) {
+          if (event.action === 'edit') {
+               this.router.navigate(['/loans/edit', event.item.Id]);
+          } else if (event.action === 'delete') {
+               this.toastService.showSuccess(`Eliminar préstamo con ID: ${event.item.Id}`);
+          }   
      }
 
      onTablePageChange(pageNumber: number) {

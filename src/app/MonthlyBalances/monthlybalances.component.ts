@@ -1,27 +1,70 @@
-import { Component, OnInit, signal } from '@angular/core';
-import { IonContent } from '@ionic/angular/standalone';
-import { GetMonthlyBalancesRequest } from '../../sdk/Requests/MonthlyBalance/GetMonthlyBalancesRequest';
-import { MonthlyBalanceResponse } from '../../sdk/Responses/MonthlyBalance/MonthlyBalanceResponse';
-import { GetCostCentersAction } from '../../sdk/Actions/CostCenter/GetCostCentersAction';
-import { GetMonthlyBalancesAction } from '../../sdk/Actions/MonthlyBalance/GetMonthlyBalancesAction';
+import { Component, OnInit, signal } from "@angular/core";
+import {
+     IonGrid,
+     IonRow,
+     IonCol,
+     IonInput,
+     IonSelect,
+     IonSelectOption,
+     IonButton,
+     IonIcon,
+     IonBadge,
+     IonText,
+     IonCard,
+     ModalController,
+     IonCardHeader,
+     IonCardTitle,
+     IonCardContent,
+     IonSpinner,
+     IonContent
+} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { addOutline, filterOutline, pencilOutline, refreshOutline, searchOutline, trashOutline } from 'ionicons/icons';
-import { CostCenterResponse } from '../../sdk/Responses/CostCenter/CostCenterResponse';
-import { SearchableSelectComponent } from '../components/searchable/searchable-select.component';
+
+import { MonthlyBalanceResponse } from "../../sdk/Responses/MonthlyBalance/MonthlyBalanceResponse";
+import { ActionButton, TableColumn, TableComponent } from "../components/table/table.component";
+import { GetMonthlyBalancesRequest } from "src/sdk/Requests/MonthlyBalance/GetMonthlyBalancesRequest";
+import { ToastService } from "../components/toast/toast.service";
+import { GetMonthlyBalancesAction } from "src/sdk/Actions/MonthlyBalance/GetMonthlyBalancesAction";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { addOutline, filterOutline, pencilOutline, refreshOutline, searchOutline, trashOutline } from "ionicons/icons";
+import { CostCenterResponse } from "src/sdk/Responses/CostCenter/CostCenterResponse";
+import { GetCostCentersAction } from "src/sdk/Actions/CostCenter/GetCostCentersAction";
+import { SearchableSelectComponent } from "../components/searchable/searchable-select.component";
 
 @Component({
-     selector: 'app-home',
-     templateUrl: 'home.page.html',
-     styleUrls: ['home.page.scss'],
+     selector: 'app-monthly-balances',
+     templateUrl: './monthlybalances.component.html',
+     styleUrls: ['./monthlybalances.component.scss'],
      standalone: true,
      imports: [
+          CommonModule,
+          FormsModule,
+          IonGrid,
+          IonRow,
+          IonCol,
+          IonInput,
+          IonSelect,
+          IonSelectOption,
+          IonButton,
+          IonIcon,
+          IonBadge,
+          IonText,
+          IonCard,
+          IonCardHeader,
+          IonCardTitle,
+          IonCardContent,
+          IonSpinner,
           IonContent,
+          TableComponent,
           SearchableSelectComponent
-     ],
+     ]
 })
-export class HomePage implements OnInit
+export class MonthlyBalancesComponent implements OnInit
 {
      public monthlyBalances = signal<MonthlyBalanceResponse[]>([]);
+     public columns: TableColumn[] = [];
+     public actionButtons: ActionButton[] = [];
      public totalCount = signal<number>(0);
      public isLoading = signal<boolean>(false);
      public validationErrors = signal<any>(null);
@@ -41,11 +84,22 @@ export class HomePage implements OnInit
      constructor(
           private getMonthlyBalancesAction: GetMonthlyBalancesAction,
           private getCostCentersAction: GetCostCentersAction,
-     ) 
-     { 
+          private toastService: ToastService
+     ) {
           addIcons({ searchOutline, refreshOutline, filterOutline, addOutline, pencilOutline, trashOutline });
      }
+
      ngOnInit() {
+          this.columns = [
+               { key: 'Id', label: 'Id', size: '12', sizeMd: '1' },
+               { key: 'MonthPeriod', label: 'Mes', size: '12', sizeMd: '4' },
+               { key: 'TotalIncomes', label: 'Ingresos', size: '12', sizeMd: '4' },
+               { key: 'TotalExpenses', label: 'Salidas', size: '12', sizeMd: '4' },
+               { key: 'ClosingBalance', label: 'Saldo Cierre', size: '12', sizeMd: '4' },
+               { key: 'CenterName', label: 'Centro de Costos', size: '12', sizeMd: '4' },
+               { key: 'ProfitMarginPercentage', label: 'Margen beneficio', size: '12', sizeMd: '4' }
+          ];
+
           this.LoadData();
      }
 
