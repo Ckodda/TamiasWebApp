@@ -1,3 +1,100 @@
+<ion-header>
+     <ion-toolbar>
+          <ion-title>Dashboard</ion-title>
+     </ion-toolbar>
+</ion-header>
+
 <ion-content class="ion-padding">
-     <h1>Home</h1>
+     <ion-grid>
+          <ion-row>
+               <ion-col size="12" size-md="3">
+                    <ion-input type="date" fill="outline" [(ngModel)]="filters.StartMonth" label="Mes Inicio"
+                         label-placement="floating"></ion-input>
+               </ion-col>
+               <ion-col size="12" size-md="3">
+                    <ion-input type="date" fill="outline" [(ngModel)]="filters.EndMonth" label="Mes Fin"
+                         label-placement="floating"></ion-input>
+               </ion-col>
+               <ion-col size="12" size-md="2">
+                    <ion-select mode="md" fill="outline" label="Centro de Costo" labelPlacement="stacked"
+                         [(ngModel)]="filters.CostCenterId" placeholder="Todos" interface="popover">
+                         <ion-select-option [value]="null">Todos</ion-select-option>
+                         <ion-select-option *ngIf="selectedCostCenter() as sel" [value]="sel.Id">
+                              {{ costCenterLabelFn(sel) }}
+                         </ion-select-option>
+                         <ng-container *ngFor="let item of costCenters()">
+                              <ion-select-option *ngIf="item.Id !== selectedCostCenter()?.Id" [value]="item.Id">
+                                   {{ item.CenterName }}
+                              </ion-select-option>
+                         </ng-container>
+                         <app-searchable-select slot="end" label="Centro de Costos" [items]="costCenters()"
+                              [loading]="isSearchingCostCenters()" (searchChange)="onCostCenterSearchChange($event)"
+                              (itemSelected)="onCostCenterSelected($event)" [itemLabelFn]="costCenterLabelFn"
+                              [itemNoteFn]="costCenterNoteFn">
+                         </app-searchable-select>
+                    </ion-select>
+               </ion-col>
+               <ion-col size="12" size-md="2" class="ion-align-self-end">
+                    <ion-button expand="block" (click)="LoadData()">
+                         <ion-icon name="search-outline" slot="start"></ion-icon>
+                         Buscar
+                    </ion-button>
+                    <ion-button expand="block" fill="clear" (click)="ResetFilters()">
+                         <ion-icon name="refresh-outline" slot="start"></ion-icon>
+                         Limpiar
+                    </ion-button>
+               </ion-col>
+          </ion-row>
+     </ion-grid>
+
+     @if (isLoading()) {
+     <div class="ion-text-center">
+          <ion-spinner name="crescent"></ion-spinner>
+     </div>
+     } @else {
+     <ion-grid>
+          <ion-row>
+               <ion-col size="12" size-md="6">
+                    <ion-card>
+                         <ion-card-header>
+                              <ion-card-title>Ingresos vs. Salidas</ion-card-title>
+                         </ion-card-header>
+                         <ion-card-content>
+                              <canvas baseChart [data]="barChartData" [options]="barChartOptions" [type]="barChartType">
+                              </canvas>
+                              <div class="ion-padding-top">
+                                   <p *ngFor="let balance of monthlyClosingBalances">
+                                        <strong>{{ balance.month }}:</strong>
+                                        <span [style.color]="balance.closing >= 0 ? 'green' : 'red'">
+                                             {{ balance.closing >= 0 ? '+' : '' }}{{ balance.percentage.toFixed(1) }}%
+                                        </span>
+                                        ({{ balance.closing.toFixed(2) }})
+                                   </p>
+                              </div>
+                         </ion-card-content>
+                    </ion-card>
+               </ion-col>
+               <ion-col size="12" size-md="6">
+                    <ion-card>
+                         <ion-card-header>
+                              <ion-card-title>Proporciones</ion-card-title>
+                         </ion-card-header>
+                         <ion-card-content>
+                              <canvas baseChart [data]="doughnutChartData" [type]="doughnutChartType" [options]="doughnutChartOptions">
+                              </canvas>
+                              <div class="ion-padding-top ion-text-center">
+                                   <p>
+                                        <strong>Balance Total:</strong>
+                                        <span [style.color]="totalClosingBalance.closing >= 0 ? 'green' : 'red'">
+                                             {{ totalClosingBalance.closing >= 0 ? '+' : '' }}{{ totalClosingBalance.percentage.toFixed(1) }}%
+                                        </span>
+                                        ({{ totalClosingBalance.closing.toFixed(2) }})
+                                   </p>
+                              </div>
+                         </ion-card-content>
+                    </ion-card>
+               </ion-col>
+          </ion-row>
+     </ion-grid>
+     }
 </ion-content>
