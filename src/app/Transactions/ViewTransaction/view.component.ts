@@ -135,8 +135,6 @@ export class ViewComponent implements OnInit {
                AccountingPeriod: [{ value: data?.AccountingPeriod, disabled: true }],
                TransactionDescription: [{ value: data?.TransactionDescription, disabled: true }],
                ReceiptImagePath: [{ value: data?.ReceiptImagePath, disabled: true }],
-               IsActive: [{ value: data?.IsActive, disabled: true }],
-               
           });
      }
 
