@@ -26,11 +26,13 @@ import { GetMonthlyBalancesRequest } from "src/sdk/Requests/MonthlyBalance/GetMo
 import { ToastService } from "../components/toast/toast.service";
 import { GetMonthlyBalancesAction } from "src/sdk/Actions/MonthlyBalance/GetMonthlyBalancesAction";
 import { CommonModule } from "@angular/common";
-import { FormsModule } from "@angular/forms";
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { addOutline, filterOutline, pencilOutline, refreshOutline, searchOutline, trashOutline } from "ionicons/icons";
 import { CostCenterResponse } from "src/sdk/Responses/CostCenter/CostCenterResponse";
 import { GetCostCentersAction } from "src/sdk/Actions/CostCenter/GetCostCentersAction";
 import { SearchableSelectComponent } from "../components/searchable/searchable-select.component";
+import { CurrencyResponse } from "src/sdk/Responses/Currency/CurrencyResponse";
+import { GetCurrenciesAction } from "src/sdk/Actions/Currency/GetCurrenciesAction";
 
 @Component({
      selector: 'app-monthly-balances',
@@ -40,6 +42,7 @@ import { SearchableSelectComponent } from "../components/searchable/searchable-s
      imports: [
           CommonModule,
           FormsModule,
+          ReactiveFormsModule,
           IonGrid,
           IonRow,
           IonCol,
@@ -68,25 +71,37 @@ export class MonthlyBalancesComponent implements OnInit
      public totalCount = signal<number>(0);
      public isLoading = signal<boolean>(false);
      public validationErrors = signal<any>(null);
+     public isSubmitted = signal<boolean>(false);
 
-     public filters: GetMonthlyBalancesRequest = {
-          StartMonth: undefined,
-          EndMonth: undefined,
-          CostCenterId: undefined,
-          PageNumber: 1,
-          PageSize: 10
-     };
+     public form!: FormGroup;
 
      public costCenters = signal<CostCenterResponse[]>([]);
      public selectedCostCenter = signal<CostCenterResponse | null>(null);
      public isSearchingCostCenters = signal<boolean>(false);
 
+     public currencies = signal<CurrencyResponse[]>([]);
+     public selectedCurrency = signal<CurrencyResponse | null>(null);
+     public isSearchingCurrencies = signal<boolean>(false);
+
      constructor(
+          private fb: FormBuilder,
           private getMonthlyBalancesAction: GetMonthlyBalancesAction,
           private getCostCentersAction: GetCostCentersAction,
+          private getCurrenciesAction: GetCurrenciesAction,
           private toastService: ToastService
      ) {
           addIcons({ searchOutline, refreshOutline, filterOutline, addOutline, pencilOutline, trashOutline });
+     }
+
+     private initForm() {
+          this.form = this.fb.group({
+               StartMonth: [null, Validators.required],
+               EndMonth: [null, Validators.required],
+               CostCenterId: [null],
+               CurrencyId: [null, Validators.required],
+               PageNumber: [1],
+               PageSize: [10]
+          });
      }
 
      ngOnInit() {
@@ -100,14 +115,23 @@ export class MonthlyBalancesComponent implements OnInit
                { key: 'ProfitMarginPercentage', label: 'Margen beneficio', size: '12', sizeMd: '4' }
           ];
 
+          this.initForm();
           this.LoadData();
      }
 
      LoadData(){
+          this.isSubmitted.set(true);
           this.isLoading.set(true);
           this.validationErrors.set(null);
 
-          this.getMonthlyBalancesAction.Execute(this.filters).subscribe({
+          if (this.form.invalid) {
+               this.form.markAllAsTouched();
+               this.toastService.showError('Los filtros Mes de Inicio, Mes de Fin y Moneda son obligatorios para realizar la búsqueda.');
+               this.isLoading.set(false);
+               return;
+          }
+
+          this.getMonthlyBalancesAction.Execute(this.form.value).subscribe({
                next: (response) => {
                     if (response.Code === 200 && response.Content) {
                          this.monthlyBalances.set(response.Content.Items);
@@ -123,6 +147,15 @@ export class MonthlyBalancesComponent implements OnInit
                     this.isLoading.set(false);
                }
           });
+     }
+
+     getErrorMessage(controlName: string): string {
+          const control = this.form.get(controlName);
+          if (!control || !this.isSubmitted()) return '';
+
+          if (control.hasError('required')) return 'Este campo es obligatorio.';
+
+          return '';
      }
 
      onCostCenterSearchChange(term: string) {
@@ -142,25 +175,53 @@ export class MonthlyBalancesComponent implements OnInit
 
      onCostCenterSelected(item: CostCenterResponse) {
           this.selectedCostCenter.set(item);
-          this.filters.CostCenterId = item.Id;
+          this.form.get('CostCenterId')?.setValue(item.Id);
+          this.form.get('CostCenterId')?.markAsTouched();
+     }
+
+     onCurrencySearchChange(term: string) {
+          if (term.length < 3) {
+               this.currencies.set([]);
+               return;
+          }
+          this.isSearchingCurrencies.set(true);
+          this.getCurrenciesAction.Execute({ CurrencyCode: term }).subscribe({
+               next: (res) => {
+               if (res.Code === 200 && res.Content) this.currencies.set(res.Content.Items);
+               this.isSearchingCurrencies.set(false);
+               },
+               error: () => this.isSearchingCurrencies.set(false)
+          });
+     }
+
+     onCurrencySelected(item: CurrencyResponse) {
+          this.selectedCurrency.set(item);
+          this.form.get('CurrencyId')?.setValue(item.Id);
+          this.form.get('CurrencyId')?.markAsTouched();
      }
 
      costCenterLabelFn = (item: CostCenterResponse | null) => item?.CodeCostCenter || '';
      costCenterNoteFn = (item: CostCenterResponse | null) => item?.CenterName || '';
 
+     currencyLabelFn = (item: CurrencyResponse | null) => item?.CurrencyCode || '';
+     currencyNoteFn = (item: CurrencyResponse | null) => item?.CurrencySymbol || '';
+
      ResetFilters(){
-          this.filters = { CostCenterId: undefined, StartMonth: undefined, EndMonth: undefined, PageNumber: 1, PageSize: 10};
+          this.isSubmitted.set(false);
+          this.form.reset({ PageNumber: 1, PageSize: 10 });
+          this.selectedCostCenter.set(null);
+          this.selectedCurrency.set(null);
           this.LoadData();
      }
 
      onTablePageSizeChange(pageSize: number) {
-          this.filters.PageSize = pageSize;
-          this.filters.PageNumber = 1;
+          this.form.get('PageSize')?.setValue(pageSize);
+          this.form.get('PageNumber')?.setValue(1);
           this.LoadData();
      }
 
      onTablePageChange(pageNumber: number) {
-          this.filters.PageNumber = pageNumber;
+          this.form.get('PageNumber')?.setValue(pageNumber);
           this.LoadData();
      }
 }

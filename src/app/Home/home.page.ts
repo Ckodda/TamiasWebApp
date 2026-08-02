@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonContent, IonGrid, IonRow, IonCol, IonInput, IonSelect, IonSelectOption, IonButton, IonIcon, IonSpinner, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { GetMonthlyBalancesRequest } from '../../sdk/Requests/MonthlyBalance/GetMonthlyBalancesRequest';
 import { MonthlyBalanceResponse } from '../../sdk/Responses/MonthlyBalance/MonthlyBalanceResponse';
@@ -14,6 +14,8 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartEvent, ChartType } from 'chart.js';
 import { Chart, CategoryScale, LinearScale, BarController, BarElement, DoughnutController, ArcElement, Tooltip, Legend } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { CurrencyResponse } from 'src/sdk/Responses/Currency/CurrencyResponse';
+import { GetCurrenciesAction } from 'src/sdk/Actions/Currency/GetCurrenciesAction';
 
 @Component({
      selector: 'app-home',
@@ -24,6 +26,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
           
           CommonModule,
           FormsModule,
+          ReactiveFormsModule,
           IonContent,
           SearchableSelectComponent,
           BaseChartDirective,
@@ -52,18 +55,16 @@ export class HomePage implements OnInit {
      public totalCount = signal<number>(0);
      public isLoading = signal<boolean>(false);
      public validationErrors = signal<any>(null);
-
-     public filters: GetMonthlyBalancesRequest = {
-          StartMonth: undefined,
-          EndMonth: undefined,
-          CostCenterId: undefined,
-          PageNumber: 1,
-          PageSize: 12
-     };
+     public isSubmitted = signal<boolean>(false);
+     public form!: FormGroup;
 
      public costCenters = signal<CostCenterResponse[]>([]);
      public selectedCostCenter = signal<CostCenterResponse | null>(null);
      public isSearchingCostCenters = signal<boolean>(false);
+
+     public currencies = signal<CurrencyResponse[]>([]);
+     public selectedCurrency = signal<CurrencyResponse | null>(null);
+     public isSearchingCurrencies = signal<boolean>(false);
 
      public monthlyClosingBalances: { month: string, closing: number, percentage: number }[] = [];
      public totalClosingBalance: { closing: number, percentage: number } = { closing: 0, percentage: 0 };
@@ -145,21 +146,45 @@ export class HomePage implements OnInit {
 
 
      constructor(
+          private fb: FormBuilder,
           private getMonthlyBalancesAction: GetMonthlyBalancesAction,
           private getCostCentersAction: GetCostCentersAction,
+          private getCurrenciesAction: GetCurrenciesAction
      ) {
           addIcons({ searchOutline, refreshOutline, filterOutline, addOutline, pencilOutline, trashOutline });
      }
+
+     private initForm() {
+          this.form = this.fb.group({
+               StartMonth: [null, Validators.required],
+               EndMonth: [null, Validators.required],
+               CostCenterId: [null],
+               CurrencyId: [null, Validators.required],
+               PageNumber: [1],
+               PageSize: [12]
+          });
+     }
+
      ngOnInit() {
+          this.initForm();
           this.LoadData();
           Chart.register(CategoryScale, LinearScale, BarController, BarElement, DoughnutController, ArcElement, Tooltip, Legend, ChartDataLabels);
      }
 
      LoadData() {
+          this.isSubmitted.set(true);
           this.isLoading.set(true);
           this.validationErrors.set(null);
 
-          this.getMonthlyBalancesAction.Execute(this.filters).subscribe({
+          if (this.form.invalid) {
+               this.form.markAllAsTouched();
+               this.isLoading.set(false);
+               // Opcional: Mostrar un toast como en el otro componente si se desea.
+               // this.toastService.showError('Los filtros Mes de Inicio, Mes de Fin y Moneda son obligatorios.');
+               return;
+          }
+
+          this.getMonthlyBalancesAction.Execute(this.form.value).subscribe({
                next: (response) => {
                     if (response.Code === 200 && response.Content) {
                          this.monthlyBalances.set(response.Content.Items);
@@ -176,6 +201,15 @@ export class HomePage implements OnInit {
                     this.isLoading.set(false);
                }
           });
+     }
+
+     getErrorMessage(controlName: string): string {
+          const control = this.form.get(controlName);
+          if (!control || !this.isSubmitted()) return '';
+
+          if (control.hasError('required')) return 'Este campo es obligatorio.';
+
+          return '';
      }
 
      updateChartData(balances: MonthlyBalanceResponse[]) {
@@ -234,14 +268,42 @@ export class HomePage implements OnInit {
 
      onCostCenterSelected(item: CostCenterResponse) {
           this.selectedCostCenter.set(item);
-          this.filters.CostCenterId = item.Id;
+          this.form.get('CostCenterId')?.setValue(item.Id);
+          this.form.get('CostCenterId')?.markAsTouched();
+     }
+
+     onCurrencySearchChange(term: string) {
+          if (term.length < 3) {
+               this.currencies.set([]);
+               return;
+          }
+          this.isSearchingCurrencies.set(true);
+          this.getCurrenciesAction.Execute({ CurrencyCode: term }).subscribe({
+               next: (res) => {
+                    if (res.Code === 200 && res.Content) this.currencies.set(res.Content.Items);
+                    this.isSearchingCurrencies.set(false);
+               },
+               error: () => this.isSearchingCurrencies.set(false)
+          });
+     }
+
+     onCurrencySelected(item: CurrencyResponse) {
+          this.selectedCurrency.set(item);
+          this.form.get('CurrencyId')?.setValue(item.Id);
+          this.form.get('CurrencyId')?.markAsTouched();
      }
 
      costCenterLabelFn = (item: CostCenterResponse | null) => item?.CodeCostCenter || '';
      costCenterNoteFn = (item: CostCenterResponse | null) => item?.CenterName || '';
 
+     currencyLabelFn = (item: CurrencyResponse | null) => item?.CurrencyCode || '';
+     currencyNoteFn = (item: CurrencyResponse | null) => item?.CurrencyName || '';
+
      ResetFilters() {
-          this.filters = { CostCenterId: undefined, StartMonth: undefined, EndMonth: undefined, PageNumber: 1, PageSize: 12 };
+          this.isSubmitted.set(false);
+          this.form.reset({ PageNumber: 1, PageSize: 12 });
+          this.selectedCostCenter.set(null);
+          this.selectedCurrency.set(null);
           this.LoadData();
      }
 
